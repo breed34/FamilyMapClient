@@ -20,7 +20,7 @@ public class DataCache {
 
     private String serverHost;
     private String serverPort;
-    private String currentUserToken;
+    private Authtoken currentUserToken;
     private Map<String, Person> persons;
     private Map<String, Event> events;
 
@@ -40,11 +40,11 @@ public class DataCache {
         this.serverPort = serverPort;
     }
 
-    public String getCurrentUserToken() {
+    public Authtoken getCurrentUserToken() {
         return currentUserToken;
     }
 
-    public void setCurrentUserToken(String currentUserToken) {
+    public void setCurrentUserToken(Authtoken currentUserToken) {
         this.currentUserToken = currentUserToken;
     }
 

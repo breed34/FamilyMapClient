@@ -95,7 +95,7 @@ public class ServerProxy {
         // Add authtoken if necessary
         if (requiresAuth) {
             http.addRequestProperty("Authorization",
-                    DataCache.getInstance().getCurrentUserToken());
+                    DataCache.getInstance().getCurrentUserToken().getAuthtoken());
         }
 
         http.connect();
