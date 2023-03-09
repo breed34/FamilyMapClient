@@ -24,11 +24,20 @@ import results.PersonsResult;
 import results.RegisterResult;
 
 public class ServerProxy {
+    /**
+     * Registers a user.
+     *
+     * @param request the register request object.
+     * @return the result of the attempt to register the user.
+     */
     public RegisterResult register(RegisterRequest request) {
         try {
             URL url = getUrlFromEndpoint("/user/register");
-            return handleHttpRequest("POST", url,
-                    false, request, RegisterResult.class);
+            return handleHttpRequest("POST",
+                    url,
+                    false,
+                    request,
+                    RegisterResult.class);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -37,11 +46,20 @@ public class ServerProxy {
         }
     }
 
+    /**
+     * Logs in a user.
+     *
+     * @param request the log in request object.
+     * @return the result of the attempt to log in the user.
+     */
     public LoginResult login(LoginRequest request) {
         try {
             URL url = getUrlFromEndpoint("/user/login");
-            return handleHttpRequest("POST", url,
-                    false, request, LoginResult.class);
+            return handleHttpRequest("POST",
+                    url,
+                    false,
+                    request,
+                    LoginResult.class);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -50,11 +68,20 @@ public class ServerProxy {
         }
     }
 
+    /**
+     * Gets all persons for the current user.
+     *
+     * @param request the persons request object.
+     * @return the result of the attempt to get all persons for the current user.
+     */
     public PersonsResult getAllPersons(PersonsRequest request) {
         try {
             URL url = getUrlFromEndpoint("/person");
-            return handleHttpRequest("GET", url,
-                    true, request, PersonsResult.class);
+            return handleHttpRequest("GET",
+                    url,
+                    true,
+                    request,
+                    PersonsResult.class);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -63,11 +90,20 @@ public class ServerProxy {
         }
     }
 
+    /**
+     * Gets all events for the current user.
+     *
+     * @param request the events request object.
+     * @return the result of the attempt to get all events for the current user.
+     */
     public EventsResult getAllEvents(EventsRequest request) {
         try {
             URL url = getUrlFromEndpoint("/event");
-            return handleHttpRequest("GET", url, true,
-                    request, EventsResult.class);
+            return handleHttpRequest("GET",
+                    url,
+                    true,
+                    request,
+                    EventsResult.class);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -76,6 +112,13 @@ public class ServerProxy {
         }
     }
 
+    /**
+     * Creates a full URL from the server endpoint.
+     *
+     * @param endpoint the server endpoint.
+     * @return The full URL.
+     * @throws MalformedURLException if an error occurs while creating the URL.
+     */
     private URL getUrlFromEndpoint(String endpoint) throws MalformedURLException {
         return new URL(String.format("http://%s:%s%s",
                 DataCache.getInstance().getServerHost(),
@@ -83,8 +126,24 @@ public class ServerProxy {
                 endpoint));
     }
 
-    private <TResult, TRequest> TResult handleHttpRequest(String method, URL url,
-        boolean requiresAuth, TRequest request, Class<TResult> resultClass) throws IOException {
+    /**
+     * Handles the execution of all HTTP requests.
+     *
+     * @param method the HTTP method: "POST", "GET", etc.
+     * @param url the URL of the endpoint to hit.
+     * @param requiresAuth whether the request requires authentication.
+     * @param request the request object.
+     * @param resultClass the class of the result object.
+     * @return the result of the request.
+     * @param <TResult> the result type.
+     * @param <TRequest> the request type.
+     * @throws IOException if an error occurs while trying to execute the request.
+     */
+    private <TResult, TRequest> TResult handleHttpRequest(String method,
+            URL url,
+            boolean requiresAuth,
+            TRequest request,
+            Class<TResult> resultClass) throws IOException {
 
         // Basic configuration of http connection
         HttpURLConnection http = (HttpURLConnection)url.openConnection();
@@ -124,6 +183,13 @@ public class ServerProxy {
         return new Gson().fromJson(responseJson, resultClass);
     }
 
+    /**
+     * Reads an input stream to a string.
+     *
+     * @param is the input stream.
+     * @return the string.
+     * @throws IOException if an error occurs while reading the stream.
+     */
     private String readString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
         InputStreamReader sr = new InputStreamReader(is);
@@ -135,6 +201,13 @@ public class ServerProxy {
         return sb.toString();
     }
 
+    /**
+     * Writes a string to an output stream.
+     *
+     * @param str the string.
+     * @param os the output stream.
+     * @throws IOException if an error occurs while writing to the stream.
+     */
     private void writeString(String str, OutputStream os) throws IOException {
         OutputStreamWriter sw = new OutputStreamWriter(os);
         sw.write(str);

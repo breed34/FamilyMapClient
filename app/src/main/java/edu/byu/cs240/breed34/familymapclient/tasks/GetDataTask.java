@@ -51,8 +51,7 @@ public class GetDataTask extends TaskBase {
         }
 
         Map<String, Object> results = new HashMap<>();
-        results.put(IS_SUCCESS_KEY, personsResult.isSuccess()
-                && eventsResult.isSuccess());
+        results.put(IS_SUCCESS_KEY, personsResult.isSuccess() && eventsResult.isSuccess());
         results.put(FIRST_NAME_KEY, firstName);
         results.put(LAST_NAME_KEY, lastName);
 

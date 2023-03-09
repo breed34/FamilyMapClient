@@ -1,12 +1,10 @@
 package edu.byu.cs240.breed34.familymapclient.fragments;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
 import android.os.Handler;
-import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -22,50 +20,106 @@ import java.util.concurrent.Executors;
 
 import edu.byu.cs240.breed34.familymapclient.R;
 import edu.byu.cs240.breed34.familymapclient.proxy.DataCache;
-import edu.byu.cs240.breed34.familymapclient.proxy.ServerProxy;
 import edu.byu.cs240.breed34.familymapclient.tasks.GetDataTask;
+import edu.byu.cs240.breed34.familymapclient.tasks.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.tasks.RegisterTask;
 import edu.byu.cs240.breed34.familymapclient.tasks.SignInTask;
-import edu.byu.cs240.breed34.familymapclient.tasks.TaskBase;
 import requests.EventsRequest;
 import requests.LoginRequest;
 import requests.PersonsRequest;
 import requests.RegisterRequest;
-import results.EventsResult;
-import results.LoginResult;
-import results.PersonsResult;
-import results.RegisterResult;
 
+/**
+ * The fragment for logging a user in.
+ */
 public class LoginFragment extends Fragment {
+    /**
+     * A reference to the server host field.
+     */
     private EditText serverHostField;
+
+    /**
+     * A reference to the server port field.
+     */
     private EditText serverPortField;
+
+    /**
+     * A reference to the username field.
+     */
     private EditText usernameField;
+
+    /**
+     * A reference to the password field.
+     */
     private EditText passwordField;
+
+    /**
+     * A reference to the first name field.
+     */
     private EditText firstNameField;
+
+    /**
+     * A reference to the last name field.
+     */
     private EditText lastNameField;
+
+    /**
+     * A reference to the email field.
+     */
     private EditText emailField;
+
+    /**
+     * A reference to the gender radio button group.
+     */
     private RadioGroup genderRadioGroup;
+
+    /**
+     * A reference to the sign in button.
+     */
     private Button signInButton;
+
+    /**
+     * A reference to the register button.
+     */
     private Button registerButton;
 
+    /**
+     * A text watcher that can be shared by each field
+     * to validate the current form.
+     */
     private final TextWatcher textWatcher = new TextWatcher() {
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             validateForm();
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public void afterTextChanged(Editable editable) {
         }
     };
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(
+            LayoutInflater inflater,
+            ViewGroup container,
+            Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
         serverHostField = view.findViewById(R.id.serverHostField);
@@ -107,13 +161,19 @@ public class LoginFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Validates the current form and decides whether
+     * to enable the register and sign in buttons.
+     */
     private void validateForm() {
-        signInButton.setEnabled(!serverHostField.getText().toString().trim().isEmpty() &&
+        signInButton.setEnabled(
+                !serverHostField.getText().toString().trim().isEmpty() &&
                 !serverPortField.getText().toString().trim().isEmpty() &&
                 !usernameField.getText().toString().trim().isEmpty() &&
                 !passwordField.getText().toString().trim().isEmpty());
 
-        registerButton.setEnabled(!serverHostField.getText().toString().trim().isEmpty() &&
+        registerButton.setEnabled(
+                !serverHostField.getText().toString().trim().isEmpty() &&
                 !serverPortField.getText().toString().trim().isEmpty() &&
                 !usernameField.getText().toString().trim().isEmpty() &&
                 !passwordField.getText().toString().trim().isEmpty() &&
@@ -123,30 +183,29 @@ public class LoginFragment extends Fragment {
                 genderRadioGroup.getCheckedRadioButtonId() != -1);
     }
 
+    /**
+     * Sets the server host and server port in
+     * the data cache.
+     */
     private void setServerHostAndPort() {
         DataCache.getInstance().setServerHost(getFieldValueById(R.id.serverHostField));
         DataCache.getInstance().setServerPort(getFieldValueById(R.id.serverPortField));
     }
 
+    /**
+     * Starts a task for signing a user in.
+     */
     private void signIn() {
-        @SuppressLint("HandlerLeak")
-        Handler signInHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                Bundle bundle = message.getData();
-
-                boolean isSuccess = bundle.getBoolean(SignInTask.IS_SUCCESS_KEY, false);
-                String personID = bundle.getString(RegisterTask.PERSON_ID_KEY, "");
-
-                if (isSuccess) {
-                    getData(false, personID);
-                }
-                else {
-                    Toast.makeText(getActivity(), R.string.signInUnsuccessfulToast,
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
+        Handler signInHandler = new HandlerBase(
+            (bundle) -> {
+                String personID = bundle.getString(SignInTask.PERSON_ID_KEY, "");
+                getData(false, personID);
+            },
+            (bundle) -> {
+                Toast.makeText(getActivity(),
+                        R.string.signInUnsuccessfulToast,
+                        Toast.LENGTH_SHORT).show();
+            });
 
         LoginRequest loginRequest = new LoginRequest(
                 getFieldValueById(R.id.usernameField),
@@ -157,25 +216,20 @@ public class LoginFragment extends Fragment {
         executor.submit(signInTask);
     }
 
+    /**
+     * Starts a task for registering a user.
+     */
     private void register() {
-        @SuppressLint("HandlerLeak")
-        Handler registerHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                Bundle bundle = message.getData();
-
-                boolean isSuccess = bundle.getBoolean(RegisterTask.IS_SUCCESS_KEY, false);
+        Handler registerHandler = new HandlerBase(
+            (bundle) -> {
                 String personID = bundle.getString(RegisterTask.PERSON_ID_KEY, "");
-
-                if (isSuccess) {
-                    getData(true, personID);
-                }
-                else {
-                    Toast.makeText(getActivity(), R.string.registerUnsuccessfulToast,
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
+                getData(true, personID);
+            },
+            (bundle) -> {
+                Toast.makeText(getActivity(),
+                        R.string.registerUnsuccessfulToast,
+                        Toast.LENGTH_SHORT).show();
+            });
 
         RegisterRequest registerRequest = new RegisterRequest(
                 getFieldValueById(R.id.usernameField),
@@ -190,32 +244,34 @@ public class LoginFragment extends Fragment {
         executor.submit(registerTask);
     }
 
+    /**
+     * Starts a task for getting the family history data
+     * for the given user.
+     *
+     * @param isRegister whether the user is being registered.
+     * @param personID the personID of the given user.
+     */
     private void getData(boolean isRegister, String personID) {
-        @SuppressLint("HandlerLeak")
-        Handler getDataHandler = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                Bundle bundle = message.getData();
-
-                boolean isSuccess = bundle.getBoolean(GetDataTask.IS_SUCCESS_KEY, false);
+        Handler getDataHandler = new HandlerBase(
+            (bundle) -> {
                 String firstName = bundle.getString(GetDataTask.FIRST_NAME_KEY, "");
                 String lastName = bundle.getString(GetDataTask.LAST_NAME_KEY, "");
-
-                if (isSuccess) {
+                Toast.makeText(getActivity(),
+                        getString(R.string.userSignedInToast, firstName, lastName),
+                        Toast.LENGTH_SHORT).show();
+            },
+            (bundle) -> {
+                if (isRegister) {
                     Toast.makeText(getActivity(),
-                            getString(R.string.userSignedInToast, firstName, lastName),
-                            Toast.LENGTH_SHORT).show();
-                }
-                else if (isRegister) {
-                    Toast.makeText(getActivity(), R.string.registerUnsuccessfulToast,
+                            R.string.registerUnsuccessfulToast,
                             Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    Toast.makeText(getActivity(), R.string.signInUnsuccessfulToast,
+                    Toast.makeText(getActivity(),
+                            R.string.signInUnsuccessfulToast,
                             Toast.LENGTH_SHORT).show();
                 }
-            }
-        };
+            });
 
         PersonsRequest personsRequest = new PersonsRequest(
                 DataCache.getInstance().getCurrentUserToken().getUsername());
@@ -224,11 +280,20 @@ public class LoginFragment extends Fragment {
                 DataCache.getInstance().getCurrentUserToken().getUsername());
 
         GetDataTask getUserDataTask = new GetDataTask(getDataHandler,
-                personID, personsRequest, eventsRequest);
+                personID,
+                personsRequest,
+                eventsRequest);
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(getUserDataTask);
     }
 
+    /**
+     * Gets the value of a given field on the form.
+     *
+     * @param id the id of the given field.
+     * @return The string value contained in the given field.
+     */
     private String getFieldValueById(int id) {
         if (id == R.id.genderRadioGroup) {
             switch (((RadioGroup)getView().findViewById(id)).getCheckedRadioButtonId()) {
