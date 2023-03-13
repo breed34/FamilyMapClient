@@ -3,6 +3,7 @@ package edu.byu.cs240.breed34.familymapclient;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,6 +12,7 @@ import edu.byu.cs240.breed34.familymapclient.client.ServerProxy;
 import models.Authtoken;
 import requests.LoginRequest;
 import requests.RegisterRequest;
+import results.ClearResult;
 import results.EventsResult;
 import results.LoginResult;
 import results.PersonsResult;
@@ -26,9 +28,6 @@ public class ServerProxyTest {
         DataCache.getInstance().setServerHost("localhost");
         DataCache.getInstance().setServerPort("8080");
 
-        ClearProxy clearProxy = new ClearProxy();
-        clearProxy.clear();
-
         proxy = new ServerProxy();
         registerRequest = new RegisterRequest("jrando",
                 "123",
@@ -38,6 +37,12 @@ public class ServerProxyTest {
                 "m");
         loginRequest = new LoginRequest("jrando",
                 "123");
+    }
+
+    @After
+    public void tearDown() {
+        ClearProxy clearProxy = new ClearProxy();
+        clearProxy.clear();
     }
 
     @Test
