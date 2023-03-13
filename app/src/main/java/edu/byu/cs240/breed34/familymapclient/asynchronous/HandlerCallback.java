@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 /**
  * An interface for creating callback methods
- * for the handler to use.
+ * for the handler base class to use.
  */
 public interface HandlerCallback {
 
