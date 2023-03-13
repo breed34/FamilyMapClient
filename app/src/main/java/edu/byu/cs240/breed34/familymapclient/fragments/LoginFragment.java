@@ -215,6 +215,7 @@ public class LoginFragment extends Fragment {
                 getFieldValueById(R.id.usernameField),
                 getFieldValueById(R.id.passwordField));
 
+        // Execute sign in task.
         SignInTask signInTask = new SignInTask(signInHandler, loginRequest);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(signInTask);
@@ -245,6 +246,7 @@ public class LoginFragment extends Fragment {
                 getFieldValueById(R.id.lastNameField),
                 getFieldValueById(R.id.genderRadioGroup));
 
+        // Execute register task.
         RegisterTask registerTask = new RegisterTask(registerHandler, registerRequest);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(registerTask);
@@ -287,8 +289,8 @@ public class LoginFragment extends Fragment {
         EventsRequest eventsRequest = new EventsRequest(
                 DataCache.getInstance().getCurrentUserToken().getUsername());
 
+        // Execute get data task.
         GetDataTask getUserDataTask = new GetDataTask(getDataHandler, personID);
-
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(getUserDataTask);
     }
