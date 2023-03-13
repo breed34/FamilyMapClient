@@ -199,10 +199,12 @@ public class LoginFragment extends Fragment {
      */
     private void signIn() {
         Handler signInHandler = new HandlerBase(
+            // Callback to execute if success.
             (bundle) -> {
                 String personID = bundle.getString(SignInTask.PERSON_ID_KEY, "");
                 getData(false, personID);
             },
+            // Callback to execute if error.
             (bundle) -> {
                 Toast.makeText(getActivity(),
                         R.string.signInUnsuccessfulToast,
@@ -223,10 +225,12 @@ public class LoginFragment extends Fragment {
      */
     private void register() {
         Handler registerHandler = new HandlerBase(
+            // Callback to execute if success.
             (bundle) -> {
                 String personID = bundle.getString(RegisterTask.PERSON_ID_KEY, "");
                 getData(true, personID);
             },
+            // Callback to execute if error.
             (bundle) -> {
                 Toast.makeText(getActivity(),
                         R.string.registerUnsuccessfulToast,
@@ -255,6 +259,7 @@ public class LoginFragment extends Fragment {
      */
     private void getData(boolean isRegister, String personID) {
         Handler getDataHandler = new HandlerBase(
+            // Callback to execute if success.
             (bundle) -> {
                 String firstName = bundle.getString(GetDataTask.FIRST_NAME_KEY, "");
                 String lastName = bundle.getString(GetDataTask.LAST_NAME_KEY, "");
@@ -262,6 +267,7 @@ public class LoginFragment extends Fragment {
                         getString(R.string.userSignedInToast, firstName, lastName),
                         Toast.LENGTH_SHORT).show();
             },
+            // Callback to execute if error.
             (bundle) -> {
                 if (isRegister) {
                     Toast.makeText(getActivity(),
