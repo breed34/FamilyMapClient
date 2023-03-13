@@ -1,4 +1,4 @@
-package edu.byu.cs240.breed34.familymapclient.proxy;
+package edu.byu.cs240.breed34.familymapclient.client;
 
 import java.util.HashMap;
 import java.util.List;

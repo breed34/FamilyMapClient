@@ -1,19 +1,17 @@
-package edu.byu.cs240.breed34.familymapclient.proxy;
+package edu.byu.cs240.breed34.familymapclient.client;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import models.Authtoken;
 import requests.EventsRequest;
 import requests.LoginRequest;
 import requests.PersonsRequest;
@@ -71,16 +69,15 @@ public class ServerProxy {
     /**
      * Gets all persons for the current user.
      *
-     * @param request the persons request object.
      * @return the result of the attempt to get all persons for the current user.
      */
-    public PersonsResult getAllPersons(PersonsRequest request) {
+    public PersonsResult getAllPersons() {
         try {
             URL url = getUrlFromEndpoint("/person");
             return handleHttpRequest("GET",
                     url,
                     true,
-                    request,
+                    null,
                     PersonsResult.class);
         }
         catch (IOException e) {
@@ -93,16 +90,15 @@ public class ServerProxy {
     /**
      * Gets all events for the current user.
      *
-     * @param request the events request object.
      * @return the result of the attempt to get all events for the current user.
      */
-    public EventsResult getAllEvents(EventsRequest request) {
+    public EventsResult getAllEvents() {
         try {
             URL url = getUrlFromEndpoint("/event");
             return handleHttpRequest("GET",
                     url,
                     true,
-                    request,
+                    null,
                     EventsResult.class);
         }
         catch (IOException e) {
@@ -119,7 +115,7 @@ public class ServerProxy {
      * @return The full URL.
      * @throws MalformedURLException if an error occurs while creating the URL.
      */
-    private URL getUrlFromEndpoint(String endpoint) throws MalformedURLException {
+    protected URL getUrlFromEndpoint(String endpoint) throws MalformedURLException {
         return new URL(String.format("http://%s:%s%s",
                 DataCache.getInstance().getServerHost(),
                 DataCache.getInstance().getServerPort(),
@@ -139,7 +135,7 @@ public class ServerProxy {
      * @param <TRequest> the request type.
      * @throws IOException if an error occurs while trying to execute the request.
      */
-    private <TResult, TRequest> TResult handleHttpRequest(String method,
+    protected <TResult, TRequest> TResult handleHttpRequest(String method,
             URL url,
             boolean requiresAuth,
             TRequest request,
@@ -153,14 +149,15 @@ public class ServerProxy {
 
         // Add authtoken if necessary
         if (requiresAuth) {
+            Authtoken currentToken = DataCache.getInstance().getCurrentUserToken();
             http.addRequestProperty("Authorization",
-                    DataCache.getInstance().getCurrentUserToken().getAuthtoken());
+                    currentToken != null ? currentToken.getAuthtoken() : "");
         }
 
         http.connect();
 
         // Add request body if necessary
-        if (method.toLowerCase().equals("post")) {
+        if (method.toLowerCase().equals("post") && request != null) {
             String requestJson = new Gson().toJson(request);
             OutputStream requestBody = http.getOutputStream();
             writeString(requestJson, requestBody);

@@ -19,11 +19,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs240.breed34.familymapclient.R;
-import edu.byu.cs240.breed34.familymapclient.proxy.DataCache;
-import edu.byu.cs240.breed34.familymapclient.tasks.GetDataTask;
-import edu.byu.cs240.breed34.familymapclient.tasks.HandlerBase;
-import edu.byu.cs240.breed34.familymapclient.tasks.RegisterTask;
-import edu.byu.cs240.breed34.familymapclient.tasks.SignInTask;
+import edu.byu.cs240.breed34.familymapclient.client.DataCache;
+import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.GetDataTask;
+import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
+import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.RegisterTask;
+import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.SignInTask;
 import requests.EventsRequest;
 import requests.LoginRequest;
 import requests.PersonsRequest;
@@ -166,12 +166,14 @@ public class LoginFragment extends Fragment {
      * to enable the register and sign in buttons.
      */
     private void validateForm() {
+        // Check fields for enabling sign in button.
         signInButton.setEnabled(
                 !serverHostField.getText().toString().trim().isEmpty() &&
                 !serverPortField.getText().toString().trim().isEmpty() &&
                 !usernameField.getText().toString().trim().isEmpty() &&
                 !passwordField.getText().toString().trim().isEmpty());
 
+        // Check fields for enabling register button.
         registerButton.setEnabled(
                 !serverHostField.getText().toString().trim().isEmpty() &&
                 !serverPortField.getText().toString().trim().isEmpty() &&
@@ -279,10 +281,7 @@ public class LoginFragment extends Fragment {
         EventsRequest eventsRequest = new EventsRequest(
                 DataCache.getInstance().getCurrentUserToken().getUsername());
 
-        GetDataTask getUserDataTask = new GetDataTask(getDataHandler,
-                personID,
-                personsRequest,
-                eventsRequest);
+        GetDataTask getUserDataTask = new GetDataTask(getDataHandler, personID);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(getUserDataTask);
