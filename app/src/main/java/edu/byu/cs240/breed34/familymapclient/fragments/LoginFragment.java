@@ -24,6 +24,7 @@ import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.GetDataTask;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.RegisterTask;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.SignInTask;
+import edu.byu.cs240.breed34.familymapclient.listeners.LoginListener;
 import requests.EventsRequest;
 import requests.LoginRequest;
 import requests.PersonsRequest;
@@ -33,6 +34,12 @@ import requests.RegisterRequest;
  * The fragment for logging a user in.
  */
 public class LoginFragment extends Fragment {
+    /**
+     * The listener to notify the main activity
+     * when login is complete.
+     */
+    private LoginListener listener;
+
     /**
      * A reference to the server host field.
      */
@@ -162,6 +169,15 @@ public class LoginFragment extends Fragment {
     }
 
     /**
+     * Registers a listener for the login fragment.
+     *
+     * @param listener the listener to register.
+     */
+    public void registerListener(LoginListener listener) {
+        this.listener = listener;
+    }
+
+    /**
      * Validates the current form and decides whether
      * to enable the register and sign in buttons.
      */
@@ -268,6 +284,8 @@ public class LoginFragment extends Fragment {
                 Toast.makeText(getActivity(),
                         getString(R.string.userSignedInToast, firstName, lastName),
                         Toast.LENGTH_SHORT).show();
+
+                listener.onLogin();
             },
             // Callback to execute if error.
             (bundle) -> {

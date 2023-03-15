@@ -15,4 +15,5 @@
     <string name="registerUnsuccessfulToast">Error: Register unsuccessful.</string>
     <string name="signInUnsuccessfulToast">Error: Sign in unsuccessful.</string>
     <string name="userSignedInToast">Welcome %s %s!</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
