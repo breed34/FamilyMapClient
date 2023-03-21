@@ -43,6 +43,7 @@ public class SignInTask extends TaskBase {
         if (result.isSuccess()) {
             DataCache.getInstance().setCurrentUserToken(new Authtoken(
                     result.getAuthtoken(), result.getUsername()));
+            DataCache.getInstance().setCurrentUserPersonID(result.getPersonID());
         }
 
         // Put data in bundle and send message.

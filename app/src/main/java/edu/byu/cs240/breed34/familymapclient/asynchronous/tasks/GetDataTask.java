@@ -19,18 +19,6 @@ import results.PersonsResult;
  */
 public class GetDataTask extends TaskBase {
     /**
-     * The key for the first name of the current user
-     * stored in the bundle.
-     */
-    public static final String FIRST_NAME_KEY = "FirstName";
-
-    /**
-     * The key for the last name of the current user
-     * stored in the bundle.
-     */
-    public static final String LAST_NAME_KEY = "LastName";
-
-    /**
      * The personID of the current user.
      */
     private final String personID;
@@ -47,33 +35,18 @@ public class GetDataTask extends TaskBase {
     public void run() {
         ServerProxy proxy = new ServerProxy();
 
-        String firstName = "";
-        String lastName = "";
-
-        // Get persons related to the user and store it in the data cache.
+        // Get persons and events related to the user and store it in the data cache.
         PersonsResult personsResult = proxy.getAllPersons();
-        if (personsResult.isSuccess()) {
-            DataCache.getInstance().setPersons(personsResult.getData());
-
-            // Get the first and last name of the current user.
-            Person userPerson = DataCache.getInstance().getPersons().get(personID);
-            if (userPerson != null) {
-                firstName = userPerson.getFirstName();
-                lastName = userPerson.getLastName();
-            }
-        }
-
-        // Get events related to the user and store it in the data cache.
         EventsResult eventsResult = proxy.getAllEvents();
-        if (eventsResult.isSuccess()) {
+        if (personsResult.isSuccess() && eventsResult.isSuccess()) {
+            DataCache.getInstance().setPersons(personsResult.getData());
             DataCache.getInstance().setEvents(eventsResult.getData());
+            DataCache.getInstance().setFilteredEvents();
         }
 
         // Put data in bundle and send message.
         Map<String, Object> results = new HashMap<>();
         results.put(IS_SUCCESS_KEY, personsResult.isSuccess() && eventsResult.isSuccess());
-        results.put(FIRST_NAME_KEY, firstName);
-        results.put(LAST_NAME_KEY, lastName);
         sendMessage(results);
     }
 }

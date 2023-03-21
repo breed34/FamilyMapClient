@@ -13,16 +13,33 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.client.DataCache;
+import models.Event;
 
 /**
  * The fragment for displaying family history
  * data on a Google map.
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
+    private static final float[] COLORS = new float[]{
+            BitmapDescriptorFactory.HUE_YELLOW,
+            BitmapDescriptorFactory.HUE_VIOLET,
+            BitmapDescriptorFactory.HUE_ROSE,
+            BitmapDescriptorFactory.HUE_RED,
+            BitmapDescriptorFactory.HUE_ORANGE,
+            BitmapDescriptorFactory.HUE_GREEN,
+            BitmapDescriptorFactory.HUE_MAGENTA,
+            BitmapDescriptorFactory.HUE_CYAN,
+            BitmapDescriptorFactory.HUE_BLUE,
+            BitmapDescriptorFactory.HUE_AZURE,
+    };
+
     /**
      * {@inheritDoc}
      */
@@ -54,8 +71,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng sydney = new LatLng(-34, 151);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        addEventMarkers(googleMap);
+    }
+
+    private void addEventMarkers(GoogleMap googleMap) {
+        for (Event event : DataCache.getInstance().getFilteredEvents().values()) {
+            float hue = COLORS[event.getEventType().hashCode() % COLORS.length];
+            Marker marker = googleMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(event.getLatitude(), event.getLongitude()))
+                    .icon(BitmapDescriptorFactory.defaultMarker(hue)));
+
+            marker.setTag(event.getEventID());
+        }
     }
 }

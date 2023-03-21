@@ -279,12 +279,6 @@ public class LoginFragment extends Fragment {
         Handler getDataHandler = new HandlerBase(
             // Callback to execute if success.
             (bundle) -> {
-                String firstName = bundle.getString(GetDataTask.FIRST_NAME_KEY, "");
-                String lastName = bundle.getString(GetDataTask.LAST_NAME_KEY, "");
-                Toast.makeText(getActivity(),
-                        getString(R.string.userSignedInToast, firstName, lastName),
-                        Toast.LENGTH_SHORT).show();
-
                 listener.onLogin();
             },
             // Callback to execute if error.
