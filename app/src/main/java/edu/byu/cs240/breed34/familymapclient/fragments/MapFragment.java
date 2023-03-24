@@ -22,9 +22,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import edu.byu.cs240.breed34.familymapclient.R;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
+import edu.byu.cs240.breed34.familymapclient.client.models.EventConnection;
 import models.Event;
 import models.Person;
 
@@ -95,14 +97,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         addEventMarkers(googleMap);
         googleMap.setOnMarkerClickListener((marker) -> {
+            // Might need to be added to a task
             String eventID = (String)marker.getTag();
             updateDetails(eventID);
+            //showLines(eventID, googleMap);
             return true;
         });
     }
 
     private void addEventMarkers(GoogleMap googleMap) {
         for (Event event : DataCache.getInstance().getFilteredEvents().values()) {
+            // Get color by event type hash code
             float hue = COLORS[event.getEventType().hashCode() % COLORS.length];
             Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(event.getLatitude(), event.getLongitude()))
@@ -118,6 +123,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Person eventPerson = DataCache.getInstance()
                 .getPersons().get(event.getPersonID());
 
+        // Set details text
         detailsText.setText(getString(R.string.eventDetails,
                 eventPerson.getFirstName(),
                 eventPerson.getLastName(),
@@ -126,6 +132,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 event.getCountry(),
                 event.getYear()));
 
+        // Set details icon
         switch (eventPerson.getGender()) {
             case "m":
                 detailsIcon.setImageDrawable(getDrawable(getResources(),
@@ -141,4 +148,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 break;
         }
     }
+
+    /*private void showLines(String eventID, GoogleMap googleMap) {
+        handleSpouseLine(eventID, googleMap);
+    }
+
+    private void handleSpouseLine(String eventID, GoogleMap googleMap) {
+        EventConnection spouseConnection =
+                DataCache.getInstance().getSpouseConnection(eventID);
+        if (spouseConnection != null) {
+            LatLng startPoint = new LatLng(spouseConnection.getFirstEvent().getLatitude(),
+                    spouseConnection.getFirstEvent().getLongitude());
+            LatLng endPoint = new LatLng(spouseConnection.getSecondEvent().getLatitude(),
+                    spouseConnection.getSecondEvent().getLongitude());
+            float hue = BitmapDescriptorFactory.HUE_ROSE;
+
+            googleMap.addPolyline(new PolylineOptions()
+                    .add(startPoint)
+                    .add(endPoint)
+                    .color(convertHueToColorInt(hue))
+                    .width(25.0f));
+        }
+    }
+
+    private int convertHueToColorInt(float hue) {
+        return (int)(hue * 255.99);
+    }*/
 }

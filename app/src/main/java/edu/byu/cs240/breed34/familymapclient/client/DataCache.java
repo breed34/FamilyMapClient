@@ -1,11 +1,15 @@
 package edu.byu.cs240.breed34.familymapclient.client;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import edu.byu.cs240.breed34.familymapclient.client.models.EventConnection;
 import edu.byu.cs240.breed34.familymapclient.client.models.Settings;
 import models.Authtoken;
 import models.Event;
@@ -210,5 +214,27 @@ public class DataCache {
                 filteredEvents.remove(event.getEventID());
             }
         }
+    }
+
+    public EventConnection getSpouseConnection(String eventID) {
+        Event filteredEvent = filteredEvents.get(eventID);
+        Person eventPerson = filteredEvent != null ?
+                persons.get(filteredEvent.getPersonID()) : null;
+
+        if (settings.showSpouseLines() && eventPerson != null) {
+            SortedSet<Event> spouseEvents = new TreeSet<>((event1, event2) -> {
+                return event1.getYear() - event2.getYear();
+            });
+
+            for (Event event : filteredEvents.values()) {
+                if (event.getPersonID().equals(eventPerson.getSpouseID())) {
+                    spouseEvents.add(event);
+                }
+            }
+
+            return new EventConnection(filteredEvent, spouseEvents.first());
+        }
+
+        return null;
     }
 }

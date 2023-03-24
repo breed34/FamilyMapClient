@@ -46,7 +46,7 @@ public class Settings {
         // Default settings
         showLifeStoryLines = true;
         showFamilyTreeLines = true;
-        showSpouseLines = false;
+        showSpouseLines = true;
         showFatherSide = true;
         showMotherSide = true;
         showMaleEvents = true;
