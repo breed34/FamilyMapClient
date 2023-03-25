@@ -16,4 +16,5 @@
     <string name="signInUnsuccessfulToast">Error: Sign in unsuccessful.</string>
     <string name="clickToSeeDetails">Click on a marker to see event details</string>
     <string name="eventDetails">%s %s\n%S: %s, %s (%d)</string>
+    <string name="connectionsError">An error occurred while getting connections.</string>
 </resources>

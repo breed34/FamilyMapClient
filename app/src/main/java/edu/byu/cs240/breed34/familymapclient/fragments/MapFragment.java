@@ -4,15 +4,17 @@ import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,10 +24,22 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
+import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.GetEventConnectionsTask;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
+import edu.byu.cs240.breed34.familymapclient.client.models.ConnectionType;
 import edu.byu.cs240.breed34.familymapclient.client.models.EventConnection;
 import models.Event;
 import models.Person;
@@ -35,6 +49,9 @@ import models.Person;
  * data on a Google map.
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
+    /**
+     * Array of the colors to be used for event markers.
+     */
     private static final float[] COLORS = new float[]{
             BitmapDescriptorFactory.HUE_YELLOW,
             BitmapDescriptorFactory.HUE_VIOLET,
@@ -48,8 +65,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             BitmapDescriptorFactory.HUE_AZURE,
     };
 
+    /**
+     * View for the details icon.
+     */
     private ImageView detailsIcon;
+
+    /**
+     * View for the details text.
+     */
     private TextView detailsText;
+
+    /**
+     * The lines on the map.
+     */
+    private List<Polyline> lines;
 
     /**
      * {@inheritDoc}
@@ -97,10 +126,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         addEventMarkers(googleMap);
         googleMap.setOnMarkerClickListener((marker) -> {
-            // Might need to be added to a task
             String eventID = (String)marker.getTag();
             updateDetails(eventID);
-            //showLines(eventID, googleMap);
+            addLines(googleMap, eventID);
+
             return true;
         });
     }
@@ -149,29 +178,80 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    /*private void showLines(String eventID, GoogleMap googleMap) {
-        handleSpouseLine(eventID, googleMap);
+    private void addLines(GoogleMap googleMap, String eventID) {
+        Handler connectionsHandler = new HandlerBase(
+                // Callback to execute if success.
+                (bundle) -> {
+                    // Get connections from bundle
+                    String connectionJson = bundle.getString(
+                            GetEventConnectionsTask.CONNECTIONS_KEY);
+                    Type connectionsType = new TypeToken<ArrayList<EventConnection>>(){}.getType();
+                    List<EventConnection> connections = new Gson().fromJson(connectionJson,
+                            connectionsType);
+
+                    addLinesToMap(connections, googleMap);
+                },
+                // Callback to execute if error.
+                (bundle) -> {
+                    Toast.makeText(getActivity(),
+                            R.string.connectionsError,
+                            Toast.LENGTH_SHORT).show();
+                });
+
+        GetEventConnectionsTask connectionsTask = new GetEventConnectionsTask(
+                connectionsHandler,
+                eventID);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(connectionsTask);
     }
 
-    private void handleSpouseLine(String eventID, GoogleMap googleMap) {
-        EventConnection spouseConnection =
-                DataCache.getInstance().getSpouseConnection(eventID);
-        if (spouseConnection != null) {
-            LatLng startPoint = new LatLng(spouseConnection.getFirstEvent().getLatitude(),
-                    spouseConnection.getFirstEvent().getLongitude());
-            LatLng endPoint = new LatLng(spouseConnection.getSecondEvent().getLatitude(),
-                    spouseConnection.getSecondEvent().getLongitude());
-            float hue = BitmapDescriptorFactory.HUE_ROSE;
+    private void addLinesToMap(List<EventConnection> connections, GoogleMap googleMap) {
+        clearLines();
 
-            googleMap.addPolyline(new PolylineOptions()
-                    .add(startPoint)
-                    .add(endPoint)
-                    .color(convertHueToColorInt(hue))
-                    .width(25.0f));
+        for (EventConnection connection : connections) {
+            LatLng start = new LatLng(connection.getFirstEvent().getLatitude(),
+                    connection.getFirstEvent().getLongitude());
+            LatLng end = new LatLng(connection.getSecondEvent().getLatitude(),
+                    connection.getSecondEvent().getLongitude());
+
+            // Handle each connection type
+            float defaultWidth = 20.0f;
+            switch (connection.getConnectionType()) {
+                case SPOUSE:
+                    lines.add(googleMap.addPolyline(new PolylineOptions()
+                            .add(start)
+                            .add(end)
+                            .color(Color.MAGENTA)
+                            .width(defaultWidth)));
+                    break;
+                case LIFE_STORY:
+                    lines.add(googleMap.addPolyline(new PolylineOptions()
+                            .add(start)
+                            .add(end)
+                            .color(Color.BLUE)
+                            .width(defaultWidth)));
+                    break;
+                case FAMILY_TREE:
+                    float width = (defaultWidth / connection.getGeneration());
+                    lines.add(googleMap.addPolyline(new PolylineOptions()
+                            .add(start)
+                            .add(end)
+                            .color(Color.GREEN)
+                            .width(width)));
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
-    private int convertHueToColorInt(float hue) {
-        return (int)(hue * 255.99);
-    }*/
+    private void clearLines() {
+        if (lines == null) {
+            lines = new ArrayList<>();
+        }
+
+        for (Polyline line : lines) {
+            line.remove();
+        }
+    }
 }

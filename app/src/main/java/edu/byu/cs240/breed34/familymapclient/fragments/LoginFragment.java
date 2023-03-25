@@ -218,7 +218,7 @@ public class LoginFragment extends Fragment {
             // Callback to execute if success.
             (bundle) -> {
                 String personID = bundle.getString(SignInTask.PERSON_ID_KEY, "");
-                getData(false, personID);
+                getData(false);
             },
             // Callback to execute if error.
             (bundle) -> {
@@ -245,7 +245,7 @@ public class LoginFragment extends Fragment {
             // Callback to execute if success.
             (bundle) -> {
                 String personID = bundle.getString(RegisterTask.PERSON_ID_KEY, "");
-                getData(true, personID);
+                getData(true);
             },
             // Callback to execute if error.
             (bundle) -> {
@@ -273,9 +273,8 @@ public class LoginFragment extends Fragment {
      * for the given user.
      *
      * @param isRegister whether the user is being registered.
-     * @param personID the personID of the given user.
      */
-    private void getData(boolean isRegister, String personID) {
+    private void getData(boolean isRegister) {
         Handler getDataHandler = new HandlerBase(
             // Callback to execute if success.
             (bundle) -> {
@@ -295,14 +294,8 @@ public class LoginFragment extends Fragment {
                 }
             });
 
-        PersonsRequest personsRequest = new PersonsRequest(
-                DataCache.getInstance().getCurrentUserToken().getUsername());
-
-        EventsRequest eventsRequest = new EventsRequest(
-                DataCache.getInstance().getCurrentUserToken().getUsername());
-
         // Execute get data task.
-        GetDataTask getUserDataTask = new GetDataTask(getDataHandler, personID);
+        GetDataTask getUserDataTask = new GetDataTask(getDataHandler);
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.submit(getUserDataTask);
     }

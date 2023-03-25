@@ -25,15 +25,29 @@ public class EventConnection {
      */
     private int generation;
 
-    public EventConnection(Event firstEvent, Event secondEvent) {
+    /**
+     * The connection type.
+     */
+    private ConnectionType connectionType;
+
+    public EventConnection(Event firstEvent,
+            Event secondEvent,
+            ConnectionType connectionType) {
+
         this.firstEvent = firstEvent;
         this.secondEvent = secondEvent;
+        this.connectionType = connectionType;
         this.generation = -1;
     }
 
-    public EventConnection(Event firstEvent, Event secondEvent, int generation) {
+    public EventConnection(Event firstEvent,
+            Event secondEvent,
+            ConnectionType connectionType,
+            int generation) {
+
         this.firstEvent = firstEvent;
         this.secondEvent = secondEvent;
+        this.connectionType = connectionType;
         this.generation = generation;
     }
 
@@ -47,5 +61,9 @@ public class EventConnection {
 
     public int getGeneration() {
         return generation;
+    }
+
+    public ConnectionType getConnectionType() {
+        return connectionType;
     }
 }

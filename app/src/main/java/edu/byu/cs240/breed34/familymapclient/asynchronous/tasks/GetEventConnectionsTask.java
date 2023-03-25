@@ -16,7 +16,7 @@ import edu.byu.cs240.breed34.familymapclient.client.models.EventConnection;
  * The asynchronous task for getting event
  * lines for a given event.
  */
-public class GetMapEventInfoTask extends TaskBase {
+public class GetEventConnectionsTask extends TaskBase {
     public static final String CONNECTIONS_KEY = "ConnectionsKey";
 
     /**
@@ -24,7 +24,7 @@ public class GetMapEventInfoTask extends TaskBase {
      */
     private String eventID;
 
-    public GetMapEventInfoTask(Handler messageHandler, String eventID) {
+    public GetEventConnectionsTask(Handler messageHandler, String eventID) {
         super(messageHandler);
         this.eventID = eventID;
     }
@@ -34,14 +34,9 @@ public class GetMapEventInfoTask extends TaskBase {
      */
     @Override
     public void run() {
-        List<EventConnection> eventConnections = new ArrayList<>();
-
-        // Add spouse connection.
-        EventConnection spouseConnection =
-                DataCache.getInstance().getSpouseConnection(eventID);
-        if (spouseConnection != null) {
-            eventConnections.add(spouseConnection);
-        }
+        // Add connections
+        List<EventConnection> eventConnections =
+                DataCache.getInstance().getConnections(eventID);
 
         String connectionsJson = new Gson().toJson(eventConnections);
 

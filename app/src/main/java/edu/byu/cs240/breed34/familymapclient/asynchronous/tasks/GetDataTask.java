@@ -18,14 +18,8 @@ import results.PersonsResult;
  * data for the assigned user.
  */
 public class GetDataTask extends TaskBase {
-    /**
-     * The personID of the current user.
-     */
-    private final String personID;
-
-    public GetDataTask(Handler messageHandler, String personID) {
+    public GetDataTask(Handler messageHandler) {
         super(messageHandler);
-        this.personID = personID;
     }
 
     /**

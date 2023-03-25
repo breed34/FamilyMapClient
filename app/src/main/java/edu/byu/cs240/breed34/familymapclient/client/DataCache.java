@@ -1,14 +1,16 @@
 package edu.byu.cs240.breed34.familymapclient.client;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import edu.byu.cs240.breed34.familymapclient.client.models.ConnectionType;
 import edu.byu.cs240.breed34.familymapclient.client.models.EventConnection;
 import edu.byu.cs240.breed34.familymapclient.client.models.Settings;
 import models.Authtoken;
@@ -216,25 +218,132 @@ public class DataCache {
         }
     }
 
-    public EventConnection getSpouseConnection(String eventID) {
+    /**
+     * Gets connections to a given event to be used as lines on the map.
+     *
+     * @param eventID the eventID of the given event.
+     * @return the list of connections.
+     */
+    public List<EventConnection> getConnections(String eventID) {
         Event filteredEvent = filteredEvents.get(eventID);
-        Person eventPerson = filteredEvent != null ?
-                persons.get(filteredEvent.getPersonID()) : null;
+        Person eventPerson = persons.get(filteredEvent.getPersonID());
 
-        if (settings.showSpouseLines() && eventPerson != null) {
-            SortedSet<Event> spouseEvents = new TreeSet<>((event1, event2) -> {
-                return event1.getYear() - event2.getYear();
-            });
+        List<EventConnection> connections = new ArrayList<>();
 
-            for (Event event : filteredEvents.values()) {
-                if (event.getPersonID().equals(eventPerson.getSpouseID())) {
-                    spouseEvents.add(event);
-                }
+        // Maps personID to sorted events
+        Map<String, SortedSet<Event>> eventHelper = new HashMap<>();
+        for (Event event : filteredEvents.values()) {
+            if (!eventHelper.containsKey(event.getPersonID())) {
+                eventHelper.put(event.getPersonID(), new TreeSet<>((event1, event2) -> {
+                    return event1.getYear() - event2.getYear();
+                }));
             }
 
-            return new EventConnection(filteredEvent, spouseEvents.first());
+            eventHelper.get(event.getPersonID()).add(event);
         }
 
-        return null;
+        // Try to add each list of connections
+        tryAddSpouseConnection(eventHelper, connections, eventPerson, filteredEvent);
+        tryAddLifeStoryConnections(eventHelper, connections, eventPerson);
+        tryAddFamilyTreeConnections(eventHelper, connections, eventPerson, filteredEvent);
+
+        return connections;
+    }
+
+    private void tryAddSpouseConnection(Map<String, SortedSet<Event>> eventHelper,
+            List<EventConnection> connections,
+            Person eventPerson,
+            Event event) {
+
+        if (settings.showSpouseLines() && eventPerson.getSpouseID() != null) {
+            connections.add(new EventConnection(event,
+                    eventHelper.get(eventPerson.getSpouseID()).first(),
+                    ConnectionType.SPOUSE));
+        }
+    }
+
+    private void tryAddLifeStoryConnections(Map<String, SortedSet<Event>> eventHelper,
+            List<EventConnection> connections,
+            Person eventPerson) {
+
+        if (settings.showLifeStoryLines()) {
+            Iterator<Event> it = eventHelper.get(eventPerson.getPersonID()).iterator();
+
+            // Keep track of each previous and next event
+            Event firstEvent = null;
+            while (it.hasNext()) {
+                if (firstEvent == null) {
+                    firstEvent = it.next();
+                }
+
+                Event secondEvent = it.next();
+                connections.add(new EventConnection(firstEvent,
+                        secondEvent,
+                        ConnectionType.LIFE_STORY));
+
+                firstEvent = secondEvent;
+            }
+        }
+    }
+
+    private void tryAddFamilyTreeConnections(Map<String, SortedSet<Event>> eventHelper,
+            List<EventConnection> connections,
+            Person eventPerson,
+            Event event) {
+
+        if (settings.showFamilyTreeLines()) {
+            familyTreeConnHelper(eventHelper,
+                    connections,
+                    eventPerson,
+                    event,
+                    1);
+        }
+    }
+
+    private void familyTreeConnHelper(Map<String, SortedSet<Event>> eventHelper,
+            List<EventConnection> connections,
+            Person eventPerson,
+            Event event,
+            int generation) {
+
+        // Get father and mother ids
+        String fatherID = eventPerson.getFatherID();
+        String motherID = eventPerson.getMotherID();
+
+        // Check if reached end of tree
+        if (fatherID == null && motherID == null) {
+            return;
+        }
+
+        // Get first events and add connections
+        Event fatherFirstEvent = eventHelper.get(fatherID).first();
+        Event motherFirstEvent = eventHelper.get(motherID).first();
+
+        if (fatherFirstEvent != null) {
+            connections.add(new EventConnection(event,
+                    fatherFirstEvent,
+                    ConnectionType.FAMILY_TREE,
+                    generation));
+        }
+
+        if (motherFirstEvent != null) {
+            connections.add(new EventConnection(event,
+                    motherFirstEvent,
+                    ConnectionType.FAMILY_TREE,
+                    generation));
+        }
+
+        // Recursively loop through parents
+        familyTreeConnHelper(eventHelper,
+                connections,
+                persons.get(fatherID),
+                fatherFirstEvent,
+                generation + 1);
+
+        familyTreeConnHelper(eventHelper,
+                connections,
+                persons.get(motherID),
+                motherFirstEvent,
+                generation + 1);
     }
 }
