@@ -1,6 +1,7 @@
 package edu.byu.cs240.breed34.familymapclient.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -211,7 +212,8 @@ public class DataCache {
     }
 
     private void filterByPersonIDs(Set<String> personIDs) {
-        for (Event event : filteredEvents.values()) {
+        Collection<Event> filteredEventsValues = new ArrayList<>(filteredEvents.values());
+        for (Event event : filteredEventsValues) {
             if (personIDs.contains(event.getPersonID())) {
                 filteredEvents.remove(event.getEventID());
             }

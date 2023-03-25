@@ -17,4 +17,22 @@
     <string name="clickToSeeDetails">Click on a marker to see event details</string>
     <string name="eventDetails">%s %s\n%S: %s, %s (%d)</string>
     <string name="connectionsError">An error occurred while getting connections.</string>
+    <string name="searchItem">Search</string>
+    <string name="settingsItem">Settings</string>
+    <string name="lifeStoryLinesTitle">Life Story Lines</string>
+    <string name="showLifeStoryLines">SHOW LIFE STORY LINES</string>
+    <string name="familyTreeLinesTitle">Family Tree Lines</string>
+    <string name="showFamilyTreeLines">SHOW FAMILY TREE LINES</string>
+    <string name="spouseLinesTitle">Spouse Lines</string>
+    <string name="showSpouseLines">SHOW SPOUSE LINES</string>
+    <string name="fathersSideTitle">Father\'s Side</string>
+    <string name="showFathersSide">FILTER BY FATHER\'S SIDE OF FAMILY</string>
+    <string name="mothersSideTitle">Mother\'s Side</string>
+    <string name="showMothersSide">FILTER BY MOTHER\'S SIDE OF FAMILY</string>
+    <string name="maleEventsTitle">Male Events</string>
+    <string name="femaleEventsTitle">Female Events</string>
+    <string name="showGenderEvents">FILTER EVENTS BASED ON GENDER</string>
+    <string name="logout">Logout</string>
+    <string name="logoutDescription">RETURN TO LOGIN SCREEN</string>
+    <string name="settingsError">An error occurred while applying new filters.</string>
 </resources>

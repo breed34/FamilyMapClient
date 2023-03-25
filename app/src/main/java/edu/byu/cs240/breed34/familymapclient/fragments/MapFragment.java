@@ -6,10 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -36,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.activities.SettingsActivity;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.GetEventConnectionsTask;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
@@ -90,6 +95,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                              @Nullable Bundle savedInstanceState) {
 
         View view =  inflater.inflate(R.layout.fragment_map, container, false);
+        setHasOptionsMenu(true);
 
         // Set default details icon
         detailsIcon = view.findViewById(R.id.details_icon);
@@ -110,13 +116,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Set up map
-        SupportMapFragment mapFragment =
-                (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        initializeMap();
     }
 
     /**
@@ -124,6 +124,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        googleMap.clear();
         addEventMarkers(googleMap);
         googleMap.setOnMarkerClickListener((marker) -> {
             String eventID = (String)marker.getTag();
@@ -132,6 +133,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             return true;
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initializeMap();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_map, menu);
+
+        MenuItem settingsItem = menu.findItem(R.id.settingsItem);
+        settingsItem.setOnMenuItemClickListener(menuItem -> {
+            Intent intent = new Intent(getActivity(), SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        });
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void initializeMap() {
+        SupportMapFragment mapFragment =
+                (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
     private void addEventMarkers(GoogleMap googleMap) {
