@@ -34,10 +34,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.SettingsActivity"
-            android:parentActivityName=".activities.MainActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.SearchActivity"
             android:exported="false" />
     </application>
 

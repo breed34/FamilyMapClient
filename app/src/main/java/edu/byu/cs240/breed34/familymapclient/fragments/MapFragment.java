@@ -40,6 +40,7 @@ import java.util.concurrent.Executors;
 
 import edu.byu.cs240.breed34.familymapclient.R;
 import edu.byu.cs240.breed34.familymapclient.activities.MainActivity;
+import edu.byu.cs240.breed34.familymapclient.activities.SearchActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.SettingsActivity;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.GetEventConnectionsTask;
@@ -156,6 +157,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         // If fragment is in main activity inflate menu_map_main as menu.
         if (getActivity().getClass() == MainActivity.class) {
             inflater.inflate(R.menu.menu_map_main, menu);
+
+            // Setup search button.
+            MenuItem searchItem = menu.findItem(R.id.searchItem);
+            searchItem.setOnMenuItemClickListener(menuItem -> {
+                Intent intent = new Intent(getActivity(), SearchActivity.class);
+                startActivity(intent);
+                return true;
+            });
 
             // Setup settings button.
             MenuItem settingsItem = menu.findItem(R.id.settingsItem);

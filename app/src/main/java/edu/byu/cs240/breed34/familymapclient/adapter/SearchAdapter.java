@@ -1,0 +1,86 @@
+package edu.byu.cs240.breed34.familymapclient.adapter;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
+
+import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.activities.SearchActivity;
+import models.Event;
+import models.Person;
+
+/**
+ * The recycler view adapter for the search activity.
+ */
+public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
+    /**
+     * The persons to be displayed.
+     */
+    private List<Person> persons;
+
+    /**
+     * The events to be displayed.
+     */
+    private List<Event> events;
+
+    public SearchAdapter(List<Person> persons, List<Event> events) {
+        this.persons = persons;
+        this.events = events;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getItemViewType(int position) {
+        return position < persons.size() ? SearchActivity.PERSON_ITEM_VIEW_TYPE :
+                SearchActivity.EVENT_ITEM_VIEW_TYPE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @NonNull
+    @Override
+    public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+        // Inflate appropriate item.
+        if (viewType == SearchActivity.PERSON_ITEM_VIEW_TYPE) {
+            view = inflater.inflate(R.layout.item_person, parent, false);
+        }
+        else {
+            view = inflater.inflate(R.layout.item_event, parent, false);
+        }
+
+        return new SearchViewHolder(view, viewType);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
+        // Bind to appropriate item.
+        if (position < persons.size()) {
+            holder.bind(persons.get(position));
+        }
+        else {
+            holder.bind(events.get(position - persons.size()));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getItemCount() {
+        return persons.size() + events.size();
+    }
+}
