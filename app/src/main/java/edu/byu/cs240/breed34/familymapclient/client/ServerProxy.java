@@ -141,13 +141,13 @@ public class ServerProxy {
             TRequest request,
             Class<TResult> resultClass) throws IOException {
 
-        // Basic configuration of http connection
+        // Basic configuration of http connection.
         HttpURLConnection http = (HttpURLConnection)url.openConnection();
         http.setRequestMethod(method);
         http.setDoOutput(method.toLowerCase().equals("post"));
         http.addRequestProperty("Accept", "application/json");
 
-        // Add authtoken if necessary
+        // Add authtoken if necessary.
         if (requiresAuth) {
             Authtoken currentToken = DataCache.getInstance().getCurrentUserToken();
             http.addRequestProperty("Authorization",
@@ -156,7 +156,7 @@ public class ServerProxy {
 
         http.connect();
 
-        // Add request body if necessary
+        // Add request body if necessary.
         if (method.toLowerCase().equals("post") && request != null) {
             String requestJson = new Gson().toJson(request);
             OutputStream requestBody = http.getOutputStream();
@@ -164,7 +164,7 @@ public class ServerProxy {
             requestBody.close();
         }
 
-        // Get response body
+        // Get response body.
         InputStream responseBody;
         if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
             System.out.println("Successfully registered user");
@@ -175,7 +175,7 @@ public class ServerProxy {
             responseBody = http.getErrorStream();
         }
 
-        // Return deserialized response
+        // Return deserialized response.
         String responseJson = readString(responseBody);
         return new Gson().fromJson(responseJson, resultClass);
     }

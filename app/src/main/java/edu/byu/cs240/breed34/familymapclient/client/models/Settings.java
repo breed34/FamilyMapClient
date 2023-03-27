@@ -43,10 +43,10 @@ public class Settings {
     private boolean showFemaleEvents;
 
     public Settings() {
-        // Default settings
+        // Default settings.
         showLifeStoryLines = true;
         showFamilyTreeLines = true;
-        showSpouseLines = true;
+        showSpouseLines = false;
         showFatherSide = true;
         showMotherSide = true;
         showMaleEvents = true;

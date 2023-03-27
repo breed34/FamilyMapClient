@@ -20,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -40,11 +39,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.activities.MainActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.SettingsActivity;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.GetEventConnectionsTask;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
-import edu.byu.cs240.breed34.familymapclient.client.models.ConnectionType;
 import edu.byu.cs240.breed34.familymapclient.client.models.EventConnection;
 import models.Event;
 import models.Person;
@@ -97,13 +96,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         View view =  inflater.inflate(R.layout.fragment_map, container, false);
         setHasOptionsMenu(true);
 
-        // Set default details icon
+        // Set default details icon.
         detailsIcon = view.findViewById(R.id.details_icon);
         detailsIcon.setImageDrawable(getDrawable(getResources(),
                 R.drawable.icon_android,
                 null));
 
-        // Set default details message
+        // Set default details message.
         detailsText = view.findViewById(R.id.details_text);
         detailsText.setText(R.string.clickToSeeDetails);
 
@@ -124,8 +123,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        // Clear events and add markers.
         googleMap.clear();
         addEventMarkers(googleMap);
+
+        // On marker clicked update event details and add lines.
         googleMap.setOnMarkerClickListener((marker) -> {
             String eventID = (String)marker.getTag();
             updateDetails(eventID);
@@ -135,27 +137,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onResume() {
         super.onResume();
+
+        // Re-initialize map on resume.
         initializeMap();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_map, menu);
+        // If fragment is in main activity inflate menu_map_main as menu.
+        if (getActivity().getClass() == MainActivity.class) {
+            inflater.inflate(R.menu.menu_map_main, menu);
 
-        MenuItem settingsItem = menu.findItem(R.id.settingsItem);
-        settingsItem.setOnMenuItemClickListener(menuItem -> {
-            Intent intent = new Intent(getActivity(), SettingsActivity.class);
-            startActivity(intent);
-            return true;
-        });
+            // Setup settings button.
+            MenuItem settingsItem = menu.findItem(R.id.settingsItem);
+            settingsItem.setOnMenuItemClickListener(menuItem -> {
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            });
+        }
 
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void initializeMap() {
+        // Get google map.
         SupportMapFragment mapFragment =
                 (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -165,7 +180,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void addEventMarkers(GoogleMap googleMap) {
         for (Event event : DataCache.getInstance().getFilteredEvents().values()) {
-            // Get color by event type hash code
+            // Get color by event type hash code.
             float hue = COLORS[event.getEventType().hashCode() % COLORS.length];
             Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(event.getLatitude(), event.getLongitude()))
@@ -181,7 +196,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Person eventPerson = DataCache.getInstance()
                 .getPersons().get(event.getPersonID());
 
-        // Set details text
+        // Set details text.
         detailsText.setText(getString(R.string.eventDetails,
                 eventPerson.getFirstName(),
                 eventPerson.getLastName(),
@@ -190,7 +205,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 event.getCountry(),
                 event.getYear()));
 
-        // Set details icon
+        // Set details icon.
         switch (eventPerson.getGender()) {
             case "m":
                 detailsIcon.setImageDrawable(getDrawable(getResources(),
@@ -211,7 +226,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Handler connectionsHandler = new HandlerBase(
                 // Callback to execute if success.
                 (bundle) -> {
-                    // Get connections from bundle
+                    // Get connections from bundle.
                     String connectionJson = bundle.getString(
                             GetEventConnectionsTask.CONNECTIONS_KEY);
                     Type connectionsType = new TypeToken<ArrayList<EventConnection>>(){}.getType();
@@ -227,6 +242,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             Toast.LENGTH_SHORT).show();
                 });
 
+        // Setup and execute get event connections task.
         GetEventConnectionsTask connectionsTask = new GetEventConnectionsTask(
                 connectionsHandler,
                 eventID);
@@ -243,7 +259,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             LatLng end = new LatLng(connection.getSecondEvent().getLatitude(),
                     connection.getSecondEvent().getLongitude());
 
-            // Handle each connection type
+            // Handle adding a line for each connection type.
             float defaultWidth = 20.0f;
             switch (connection.getConnectionType()) {
                 case SPOUSE:
@@ -275,6 +291,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void clearLines() {
+        // Remove all lines from map.
         if (lines == null) {
             lines = new ArrayList<>();
         }

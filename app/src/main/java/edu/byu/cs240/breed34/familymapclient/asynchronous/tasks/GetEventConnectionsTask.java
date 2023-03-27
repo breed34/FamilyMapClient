@@ -34,10 +34,11 @@ public class GetEventConnectionsTask extends TaskBase {
      */
     @Override
     public void run() {
-        // Add connections
+        // Add connections.
         List<EventConnection> eventConnections =
                 DataCache.getInstance().getConnections(eventID);
 
+        // Convert to JSON.
         String connectionsJson = new Gson().toJson(eventConnections);
 
         // Put data in bundle and send message.

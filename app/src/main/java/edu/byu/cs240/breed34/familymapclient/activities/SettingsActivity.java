@@ -19,14 +19,20 @@ import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.EvaluateNewSettingsTask;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
 
+/**
+ * Activity for controlling settings for the application.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        // Setup life story lines switch
+        // Setup life story lines switch.
         Switch lifeStoryLinesSwitch = findViewById(R.id.lifeStoryLinesSwitch);
         lifeStoryLinesSwitch.setChecked(
                 DataCache.getInstance().getSettings().showLifeStoryLines());
@@ -35,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
             evaluateNewSettings();
         });
 
-        // Setup family tree lines switch
+        // Setup family tree lines switch.
         Switch familyTreeLinesSwitch = findViewById(R.id.familyTreeLinesSwitch);
         familyTreeLinesSwitch.setChecked(
                 DataCache.getInstance().getSettings().showFamilyTreeLines());
@@ -44,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
             evaluateNewSettings();
         });
 
-        // Setup spouse lines switch
+        // Setup spouse lines switch.
         Switch spouseLinesSwitch = findViewById(R.id.spouseLinesSwitch);
         spouseLinesSwitch.setChecked(
                 DataCache.getInstance().getSettings().showSpouseLines());
@@ -53,7 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
             evaluateNewSettings();
         });
 
-        // Setup father's side switch
+        // Setup father's side switch.
         Switch fathersSideSwitch = findViewById(R.id.fathersSideSwitch);
         fathersSideSwitch.setChecked(
                 DataCache.getInstance().getSettings().showFatherSide());
@@ -62,7 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
             evaluateNewSettings();
         });
 
-        // Setup mother's switch
+        // Setup mother's switch.
         Switch mothersSideSwitch = findViewById(R.id.mothersSideSwitch);
         mothersSideSwitch.setChecked(
                 DataCache.getInstance().getSettings().showMotherSide());
@@ -71,7 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
             evaluateNewSettings();
         });
 
-        // Setup male events switch
+        // Setup male events switch.
         Switch maleEventsSwitch = findViewById(R.id.maleEventsSwitch);
         maleEventsSwitch.setChecked(
                 DataCache.getInstance().getSettings().showMaleEvents());
@@ -80,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity {
             evaluateNewSettings();
         });
 
-        // Setup female events switch
+        // Setup female events switch.
         Switch femaleEventsSwitch = findViewById(R.id.femaleEventsSwitch);
         femaleEventsSwitch.setChecked(
                 DataCache.getInstance().getSettings().showFemaleEvents());
@@ -89,9 +95,10 @@ public class SettingsActivity extends AppCompatActivity {
             evaluateNewSettings();
         });
 
-        // Setup logout item
+        // Setup logout item.
         LinearLayout logoutItem = findViewById(R.id.logoutItem);
         logoutItem.setOnClickListener(view -> {
+            // Logout the user.
             DataCache.getInstance().setCurrentUserToken(null);
             DataCache.getInstance().setCurrentUserPersonID(null);
 
@@ -100,8 +107,12 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // Setup up button.
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -111,6 +122,9 @@ public class SettingsActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Handles all changes to settings.
+     */
     private void evaluateNewSettings() {
         Handler newSettingsHandler = new HandlerBase(
             // Do nothing if successful.
@@ -122,6 +136,7 @@ public class SettingsActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show();
             });
 
+        // Setup and start evaluate new settings task.
         EvaluateNewSettingsTask newSettingsTask = new EvaluateNewSettingsTask(
                 newSettingsHandler);
         ExecutorService executor = Executors.newSingleThreadExecutor();

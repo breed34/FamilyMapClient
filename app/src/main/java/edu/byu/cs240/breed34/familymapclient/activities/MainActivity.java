@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements LoginListener {
      */
     @Override
     public void onLogin() {
+        // Switch to map fragment.
         FragmentManager fragmentManager = this.getSupportFragmentManager();
         Fragment fragment = new MapFragment();
 

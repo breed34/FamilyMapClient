@@ -1,6 +1,3 @@
-- Fix settings bugs for map lines.
-- Consider moving map menu items to activity.
-
 - Search Activity
 - Person Activity
 - Event Activity

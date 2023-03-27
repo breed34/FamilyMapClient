@@ -25,6 +25,7 @@ public class EvaluateNewSettingsTask extends TaskBase {
      */
     @Override
     public void run() {
+        // Re-filter events.
         DataCache.getInstance().setFilteredEvents();
 
         // Put data in bundle and send message.
