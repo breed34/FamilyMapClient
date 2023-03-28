@@ -8,8 +8,12 @@
     tools:context=".activities.SearchActivity">
 
     <SearchView
+        android:id="@+id/searchView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:iconifiedByDefault="false"
+        android:queryHint="@string/searchItem" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

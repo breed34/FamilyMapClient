@@ -1,5 +1,7 @@
 <resources>
     <string name="appName">Family Map</string>
+
+    <!-- Login Fragment -->
     <string name="serverHost">Server Host:</string>
     <string name="serverPort">Server Port:</string>
     <string name="username">Username:</string>
@@ -14,11 +16,15 @@
     <string name="register">Register</string>
     <string name="registerUnsuccessfulToast">Error: Register unsuccessful.</string>
     <string name="signInUnsuccessfulToast">Error: Sign in unsuccessful.</string>
+
+    <!-- Map Fragment -->
     <string name="clickToSeeDetails">Click on a marker to see event details</string>
     <string name="eventDetails">%s %s\n%S: %s, %s (%d)</string>
     <string name="connectionsError">An error occurred while getting connections.</string>
     <string name="searchItem">Search</string>
     <string name="settingsItem">Settings</string>
+
+    <!-- Settings Activity -->
     <string name="lifeStoryLinesTitle">Life Story Lines</string>
     <string name="showLifeStoryLines">SHOW LIFE STORY LINES</string>
     <string name="familyTreeLinesTitle">Family Tree Lines</string>
@@ -35,4 +41,7 @@
     <string name="logout">Logout</string>
     <string name="logoutDescription">RETURN TO LOGIN SCREEN</string>
     <string name="settingsError">An error occurred while applying new filters.</string>
+
+    <!-- Search Activity -->
+    <string name="searchError">An error occurred while searching persons and events.</string>
 </resources>

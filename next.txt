@@ -1,6 +1,2 @@
-- Add up button to search activity.
-- Add filter functionality to search activity.
-
-
 - Person Activity
 - Event Activity

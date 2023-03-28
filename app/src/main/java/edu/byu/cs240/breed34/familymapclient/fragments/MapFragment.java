@@ -97,16 +97,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         View view =  inflater.inflate(R.layout.fragment_map, container, false);
         setHasOptionsMenu(true);
 
-        // Set default details icon.
-        detailsIcon = view.findViewById(R.id.details_icon);
-        detailsIcon.setImageDrawable(getDrawable(getResources(),
-                R.drawable.icon_android,
-                null));
-
-        // Set default details message.
-        detailsText = view.findViewById(R.id.details_text);
-        detailsText.setText(R.string.clickToSeeDetails);
-
         return view;
     }
 
@@ -116,7 +106,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        initializeMap();
+        //initializeMap();
     }
 
     /**
@@ -185,6 +175,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        // Set default details message.
+        detailsText = getView().findViewById(R.id.details_text);
+        detailsText.setText(R.string.clickToSeeDetails);
+
+        // Set default details icon.
+        detailsIcon = getView().findViewById(R.id.details_icon);
+        detailsIcon.setImageDrawable(getDrawable(getResources(),
+                R.drawable.icon_android,
+                null));
     }
 
     private void addEventMarkers(GoogleMap googleMap) {

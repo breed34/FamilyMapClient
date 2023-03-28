@@ -40,7 +40,8 @@
             android:parentActivityName=".activities.MainActivity" />
         <activity
             android:name=".activities.SearchActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".activities.MainActivity" />
     </application>
 
 </manifest>
