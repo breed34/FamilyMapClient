@@ -2,6 +2,8 @@ package edu.byu.cs240.breed34.familymapclient.adapter;
 
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.activities.PersonActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.SearchActivity;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
 import models.Event;
@@ -58,7 +61,7 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
         itemView.setOnClickListener(this);
 
         // Set additional items according to view type.
-        if (viewType == SearchActivity.PERSON_ITEM_VIEW_TYPE) {
+        if (viewType == SearchAdapter.PERSON_ITEM_VIEW_TYPE) {
             icon = itemView.findViewById(R.id.personItemIcon);
             name = itemView.findViewById(R.id.personItemName);
             eventDetails = null;
@@ -76,9 +79,10 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
      */
     public void bind(Person person) {
         this.person = person;
-        String gender = person.getGender();
+        itemView.setTag(person.getPersonID());
 
         // Set icon and name.
+        String gender = person.getGender();
         int drawableId = gender.equals("m") ? R.drawable.icon_man : R.drawable.icon_woman;
         icon.setImageDrawable(getDrawable(itemView.getResources(),
                 drawableId,
@@ -92,15 +96,13 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
      *
      * @param event the event associated with the view.
      */
+    @SuppressLint("DefaultLocale")
     public void bind(Event event) {
         this.event = event;
         this.person = DataCache.getInstance().getPersons().get(event.getPersonID());
+        itemView.setTag(event.getEventID());
 
-        // Set icon, name, and event details.
-        icon.setImageDrawable(getDrawable(itemView.getResources(),
-                R.drawable.icon_map_marker,
-                null));
-
+        // Set name and event details.
         name.setText(String.format("%s %s", person.getFirstName(), person.getLastName()));
         eventDetails.setText(String.format("%S: %s, %s (%d)",
                 event.getEventType(),
@@ -114,6 +116,14 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
      */
     @Override
     public void onClick(View view) {
-
+        if (viewType == SearchAdapter.PERSON_ITEM_VIEW_TYPE) {
+            // Start person activity.
+            Intent intent = new Intent(view.getContext(), PersonActivity.class);
+            intent.putExtra(PersonActivity.PERSON_ID_KEY, view.getTag().toString());
+            view.getContext().startActivity(intent);
+        }
+        else {
+            // FIXME: Add navigation to event activity
+        }
     }
 }

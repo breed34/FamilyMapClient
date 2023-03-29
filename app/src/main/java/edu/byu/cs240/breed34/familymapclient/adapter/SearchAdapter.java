@@ -18,6 +18,9 @@ import models.Person;
  * The recycler view adapter for the search activity.
  */
 public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
+    public static final int PERSON_ITEM_VIEW_TYPE = 0;
+    public static final int EVENT_ITEM_VIEW_TYPE = 1;
+
     /**
      * The persons to be displayed.
      */
@@ -38,8 +41,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
      */
     @Override
     public int getItemViewType(int position) {
-        return position < persons.size() ? SearchActivity.PERSON_ITEM_VIEW_TYPE :
-                SearchActivity.EVENT_ITEM_VIEW_TYPE;
+        return position < persons.size() ? PERSON_ITEM_VIEW_TYPE :
+                EVENT_ITEM_VIEW_TYPE;
     }
 
     /**
@@ -52,8 +55,8 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
         // Inflate appropriate item.
-        if (viewType == SearchActivity.PERSON_ITEM_VIEW_TYPE) {
-            view = inflater.inflate(R.layout.item_person, parent, false);
+        if (viewType == PERSON_ITEM_VIEW_TYPE) {
+            view = inflater.inflate(R.layout.item_person_search, parent, false);
         }
         else {
             view = inflater.inflate(R.layout.item_event, parent, false);

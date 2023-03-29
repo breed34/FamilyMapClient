@@ -7,10 +7,10 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/eventItemIcon"
+        android:id="@+id/personDetailsIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_map_marker" />
+        tools:src="@drawable/icon_man" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -19,18 +19,18 @@
         android:layout_gravity="center_vertical">
 
         <TextView
-            android:id="@+id/eventItemDetails"
+            android:id="@+id/personDetailsName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingVertical="4dp"
-            tools:text="DEATH: Barranquilla, Colombia (1935)"/>
+            tools:text="Ezra Smith"/>
 
         <TextView
-            android:id="@+id/eventItemName"
+            android:id="@+id/personRelationship"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingVertical="4dp"
-            tools:text="Dalton Minot"/>
+            tools:text="Spouse"/>
 
     </LinearLayout>
 

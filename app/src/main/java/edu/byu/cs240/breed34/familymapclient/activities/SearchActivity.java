@@ -30,10 +30,10 @@ import edu.byu.cs240.breed34.familymapclient.client.DataCache;
 import models.Event;
 import models.Person;
 
+/**
+ * Activity for handling searches.
+ */
 public class SearchActivity extends AppCompatActivity {
-    public static final int PERSON_ITEM_VIEW_TYPE = 0;
-    public static final int EVENT_ITEM_VIEW_TYPE = 1;
-
     /**
      * Filtered persons after search executed.
      */

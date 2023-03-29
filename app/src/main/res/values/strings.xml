@@ -44,4 +44,16 @@
 
     <!-- Search Activity -->
     <string name="searchError">An error occurred while searching persons and events.</string>
+
+    <!-- Person Activity -->
+    <string name="personFirstName">First Name</string>
+    <string name="personLastName">Last Name</string>
+    <string name="personGender">Gender</string>
+    <string name="personLifeEvents">LIFE EVENTS</string>
+    <string name="personFamily">FAMILY</string>
+    <string name="personFather">Father</string>
+    <string name="personMother">Mother</string>
+    <string name="personSpouse">Spouse</string>
+    <string name="personChild">Child</string>
+    <string name="personDetailsError">An error occurred while getting person details.</string>
 </resources>
