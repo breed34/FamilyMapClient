@@ -1,2 +1,15 @@
+- Add unit tests.
+- Go through files and cleanup.
+- Reuse repeated code.
+- Reread design and rubric.
+- End to end test.
 
-- Event Activity
+- Meet with TA for following questions:
+    = Can I pick event markers based on hashcode?
+    = Should I split up DataCache?
+    = Is my map return logic okay? i.e. Redrawing selected event or resetting details.
+    = Are there specific colors that the three key events should be? i.e. Birth, Marriage, Death.
+    = Does the app need to save state on rotate?
+    = Is it okay that there are no visual indicators on some clickables? i.e. search, event details.
+    = How should I best test to make sure my app meets the requirements?
+    = Is it okay that I used so many lambdas?
