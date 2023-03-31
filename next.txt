@@ -1,5 +1,2 @@
-- Set PersonActivity to navigate to self on family member click.
-- Set MapFragment to navigate to PersonActivity on details click.
-- Consider changing color of family tree lines.
 
 - Event Activity

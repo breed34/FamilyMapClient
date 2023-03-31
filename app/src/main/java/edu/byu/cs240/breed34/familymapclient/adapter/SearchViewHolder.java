@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.activities.EventActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.PersonActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.SearchActivity;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
@@ -123,7 +124,10 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
             view.getContext().startActivity(intent);
         }
         else {
-            // FIXME: Add navigation to event activity
+            // Start event activity.
+            Intent intent = new Intent(view.getContext(), EventActivity.class);
+            intent.putExtra(EventActivity.EVENT_ID_KEY, view.getTag().toString());
+            view.getContext().startActivity(intent);
         }
     }
 }

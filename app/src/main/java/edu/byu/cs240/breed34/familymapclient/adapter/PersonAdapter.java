@@ -3,6 +3,7 @@ package edu.byu.cs240.breed34.familymapclient.adapter;
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.activities.EventActivity;
+import edu.byu.cs240.breed34.familymapclient.activities.PersonActivity;
 import edu.byu.cs240.breed34.familymapclient.client.models.FamilyMember;
 import models.Event;
 import models.Person;
@@ -209,8 +212,12 @@ public class PersonAdapter extends BaseExpandableListAdapter {
                 person.getLastName()));
 
         // Setup on click listener.
+        lifeEventView.setTag(event.getEventID());
         lifeEventView.setOnClickListener(view -> {
-            // FIXME: Select event
+            // Start event activity.
+            Intent intent = new Intent(view.getContext(), EventActivity.class);
+            intent.putExtra(EventActivity.EVENT_ID_KEY, view.getTag().toString());
+            view.getContext().startActivity(intent);
         });
     }
 
@@ -235,9 +242,12 @@ public class PersonAdapter extends BaseExpandableListAdapter {
                 null));
 
 
-        // Setup on click listener.
+        familyMemberView.setTag(familyMember.getPersonID());
         familyMemberView.setOnClickListener(view -> {
-            // FIXME: Select person
+            // Start person activity.
+            Intent intent = new Intent(view.getContext(), PersonActivity.class);
+            intent.putExtra(PersonActivity.PERSON_ID_KEY, view.getTag().toString());
+            view.getContext().startActivity(intent);
         });
     }
 }

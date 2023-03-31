@@ -17,9 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -39,7 +41,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import edu.byu.cs240.breed34.familymapclient.R;
+import edu.byu.cs240.breed34.familymapclient.activities.EventActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.MainActivity;
+import edu.byu.cs240.breed34.familymapclient.activities.PersonActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.SearchActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.SettingsActivity;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
@@ -71,6 +75,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     };
 
     /**
+     * The details container.
+     */
+    private LinearLayout detailsContainer;
+
+    /**
      * View for the details icon.
      */
     private ImageView detailsIcon;
@@ -84,6 +93,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * The lines on the map.
      */
     private List<Polyline> lines;
+
+    /**
+     * The eventID of the currently selected event.
+     */
+    private String selectedEventID;
 
     /**
      * {@inheritDoc}
@@ -106,7 +120,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //initializeMap();
     }
 
     /**
@@ -118,11 +131,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.clear();
         addEventMarkers(googleMap);
 
+        // Re-initialize map if selected event has been filtered otherwise re-select event.
+        if (selectedEventID == null ||
+            DataCache.getInstance().getFilteredEvents().get(selectedEventID) == null) {
+
+            initializeMap();
+        }
+        else {
+            selectEvent(googleMap, selectedEventID, false);
+        }
+
+        // If there is an eventID passed in from the activity, navigate to it.
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.getString(EventActivity.EVENT_ID_KEY) != null) {
+            String initialEventID = bundle.getString(EventActivity.EVENT_ID_KEY);
+            selectEvent(googleMap, initialEventID, true);
+        }
+
         // On marker clicked update event details and add lines.
         googleMap.setOnMarkerClickListener((marker) -> {
             String eventID = (String)marker.getTag();
-            updateDetails(eventID);
-            addLines(googleMap, eventID);
+            selectEvent(googleMap, eventID, false);
 
             return true;
         });
@@ -135,8 +164,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
 
-        // Re-initialize map on resume.
-        initializeMap();
+        SupportMapFragment mapFragment =
+                (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
     }
 
     /**
@@ -168,13 +200,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private void initializeMap() {
-        // Get google map.
-        SupportMapFragment mapFragment =
-                (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+    private void selectEvent(GoogleMap googleMap, String eventID, boolean centerEvent) {
+        updateDetails(eventID);
+        addLines(googleMap, eventID);
+
+        // If centerEvent, move to that event.
+        if (centerEvent) {
+            Event event = DataCache.getInstance().getFilteredEvents().get(eventID);
+            LatLng location = new LatLng(event.getLatitude(), event.getLongitude());
+            googleMap.animateCamera(CameraUpdateFactory.newLatLng(location));
         }
+    }
+
+    private void initializeMap() {
+        // Deselect any selected event.
+        this.selectedEventID = null;
+
+        // Set details container.
+        detailsContainer = getActivity().findViewById(R.id.detailsContainer);
+        detailsContainer.setTag(null);
+        detailsContainer.setOnClickListener(view -> {
+            if (view.getTag() != null) {
+                Intent intent = new Intent(view.getContext(), PersonActivity.class);
+                intent.putExtra(PersonActivity.PERSON_ID_KEY, view.getTag().toString());
+                view.getContext().startActivity(intent);
+            }
+        });
 
         // Set default details message.
         detailsText = getView().findViewById(R.id.details_text);
@@ -205,7 +256,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         Person eventPerson = DataCache.getInstance()
                 .getPersons().get(event.getPersonID());
 
-        // Set details text.
+        // Set selectedEventID.
+        selectedEventID = eventID;
+
+        // Set details text and details container tag.
         detailsText.setText(getString(R.string.eventDetails,
                 eventPerson.getFirstName(),
                 eventPerson.getLastName(),
@@ -213,6 +267,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 event.getCity(),
                 event.getCountry(),
                 event.getYear()));
+        detailsContainer.setTag(event.getPersonID());
 
         // Set details icon.
         switch (eventPerson.getGender()) {
@@ -290,7 +345,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     lines.add(googleMap.addPolyline(new PolylineOptions()
                             .add(start)
                             .add(end)
-                            .color(Color.GREEN)
+                            .color(Color.CYAN)
                             .width(width)));
                     break;
                 default:

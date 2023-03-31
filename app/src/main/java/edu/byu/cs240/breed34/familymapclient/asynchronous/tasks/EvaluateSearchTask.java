@@ -34,26 +34,9 @@ public class EvaluateSearchTask extends TaskBase {
 
     @Override
     public void run() {
-        // Initialize search filtered events and persons.
-        Collection<Person> personsCollection = DataCache.getInstance().getPersons().values();
-        Collection<Event> eventsCollection = DataCache.getInstance().getFilteredEvents().values();
-
-        List<Person> searchFilteredPersons = new ArrayList<>(personsCollection);
-        List<Event> searchFilteredEvents = new ArrayList<>(eventsCollection);
-
-        // Remove persons who do not match search.
-        for (Person person : personsCollection) {
-            if (doesNotContainSearch(person)) {
-                searchFilteredPersons.remove(person);
-            }
-        }
-
-        // Remove events that do not match search.
-        for (Event event : eventsCollection) {
-            if (doesNotContainSearch(event)) {
-                searchFilteredEvents.remove(event);
-            }
-        }
+        // Search filtered events and persons.
+        List<Person> searchFilteredPersons = DataCache.getInstance().searchPersons(searchString);
+        List<Event> searchFilteredEvents = DataCache.getInstance().searchEvents(searchString);
 
         // Convert to JSON and add to bundle.
         String eventResultsJson = new Gson().toJson(searchFilteredEvents);
@@ -64,27 +47,5 @@ public class EvaluateSearchTask extends TaskBase {
         results.put(EVENTS_RESULTS_KEY, eventResultsJson);
         results.put(PERSONS_RESULTS_KEY, personResultsJson);
         sendMessage(results);
-    }
-
-    private boolean doesNotContainSearch(Person person) {
-        // Checks if a person matches the search string.
-        String firstName = person.getFirstName().toLowerCase();
-        String lastName = person.getLastName().toLowerCase();
-
-        return  !firstName.contains(searchString) &&
-                !lastName.contains(searchString);
-    }
-
-    private boolean doesNotContainSearch(Event event) {
-        // Checks if an event matches the search string.
-        String country = event.getCountry().toLowerCase();
-        String city = event.getCity().toLowerCase();
-        String eventType = event.getEventType().toLowerCase();
-        String year = Integer.toString(event.getYear());
-
-        return  !country.contains(searchString) &&
-                !city.contains(searchString) &&
-                !eventType.contains(searchString) &&
-                !year.contains(searchString);
     }
 }

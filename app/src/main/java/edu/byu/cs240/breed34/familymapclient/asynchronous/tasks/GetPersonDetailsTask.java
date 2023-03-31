@@ -5,6 +5,7 @@ import android.os.Handler;
 import com.google.gson.Gson;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -34,25 +35,11 @@ public class GetPersonDetailsTask extends TaskBase {
 
     @Override
     public void run() {
-        // Setup sorted sets for life events and family members.
-        SortedSet<Event> sortedLifeEvents = new TreeSet<>((event1, event2) -> {
-            return event1.getYear() - event2.getYear();
-        });
-
-        SortedSet<FamilyMember> sortedFamilyMembers = new TreeSet<>((member1, member2) -> {
-            return member1.getRelationship().ordinal() - member2.getRelationship().ordinal();
-        });
-
-        // Add applicable events and persons to sets.
-        for (Event event : DataCache.getInstance().getEvents().values()) {
-            if (event.getPersonID().equals(selectedPerson.getPersonID())) {
-                sortedLifeEvents.add(event);
-            }
-        }
-
-        for (Person person : DataCache.getInstance().getPersons().values()) {
-            tryAddFamilyMember(person, sortedFamilyMembers);
-        }
+        // Get sorted life events and family members.
+        List<Event> sortedLifeEvents = DataCache.getInstance()
+                .getPersonLifeEvents(selectedPerson);
+        List<FamilyMember> sortedFamilyMembers = DataCache.getInstance()
+                .getPersonFamilyMembers(selectedPerson);
 
         // Convert to JSON and add to bundle.
         String lifeEventsJson = new Gson().toJson(sortedLifeEvents);
@@ -63,34 +50,5 @@ public class GetPersonDetailsTask extends TaskBase {
         results.put(LIFE_EVENTS_KEY, lifeEventsJson);
         results.put(FAMILY_MEMBERS_KEY, familyMembersJson);
         sendMessage(results);
-    }
-
-    private void tryAddFamilyMember(Person person, SortedSet<FamilyMember> familyMembers) {
-        // Tries to add family members based on their relationships to the selected person.
-        if (selectedPerson.getFatherID() != null &&
-            person.getPersonID().equals(selectedPerson.getFatherID())) {
-
-            familyMembers.add(new FamilyMember(person, Relationship.FATHER));
-        }
-        else if (selectedPerson.getMotherID() != null &&
-                 person.getPersonID().equals(selectedPerson.getMotherID())) {
-
-            familyMembers.add(new FamilyMember(person, Relationship.MOTHER));
-        }
-        else if (selectedPerson.getSpouseID() != null &&
-                 person.getPersonID().equals(selectedPerson.getSpouseID())) {
-
-            familyMembers.add(new FamilyMember(person, Relationship.SPOUSE));
-        }
-        else if (person.getFatherID() != null &&
-                 person.getFatherID().equals(selectedPerson.getPersonID())) {
-
-            familyMembers.add(new FamilyMember(person, Relationship.CHILD));
-        }
-        else if (person.getMotherID() != null &&
-                person.getMotherID().equals(selectedPerson.getPersonID())) {
-
-            familyMembers.add(new FamilyMember(person, Relationship.CHILD));
-        }
     }
 }
