@@ -1,5 +1,8 @@
 package edu.byu.cs240.breed34.familymapclient.client.models;
 
+/**
+ * The relationship between two family members.
+ */
 public enum Relationship {
     FATHER,
     MOTHER,

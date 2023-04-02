@@ -66,7 +66,7 @@ public class SearchActivity extends AppCompatActivity {
              */
             @Override
             public boolean onQueryTextChange(String s) {
-                // Handle if search is cleared.
+                // Handle search.
                 if (s.length() == 0) {
                     setDefaultSearchResults();
                     setRecyclerResults();
@@ -104,6 +104,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void setDefaultSearchResults() {
+        // Set search filtered persons and events to default values.
         Collection<Person> personsCollection = DataCache.getInstance().getPersons().values();
         Collection<Event> eventsCollection = DataCache.getInstance().getFilteredEvents().values();
 
@@ -113,28 +114,28 @@ public class SearchActivity extends AppCompatActivity {
 
     private void search(String searchString) {
         Handler evaluateSearchHandler = new HandlerBase(
-                // Callback to execute if success.
-                (bundle) -> {
-                    // Get search results from bundle.
-                    String eventsJson = bundle.getString(
-                            EvaluateSearchTask.EVENTS_RESULTS_KEY);
-                    String personsJson = bundle.getString(
-                            EvaluateSearchTask.PERSONS_RESULTS_KEY);
+            // Callback to execute if success.
+            (bundle) -> {
+                // Get search results from bundle.
+                String eventsJson = bundle.getString(
+                        EvaluateSearchTask.EVENTS_RESULTS_KEY);
+                String personsJson = bundle.getString(
+                        EvaluateSearchTask.PERSONS_RESULTS_KEY);
 
-                    // Deserialize data.
-                    Type eventsType = new TypeToken<ArrayList<Event>>(){}.getType();
-                    searchFilteredEvents = new Gson().fromJson(eventsJson, eventsType);
-                    Type personsType = new TypeToken<ArrayList<Person>>(){}.getType();
-                    searchFilteredPersons = new Gson().fromJson(personsJson, personsType);
+                // Deserialize data.
+                Type eventsType = new TypeToken<ArrayList<Event>>(){}.getType();
+                searchFilteredEvents = new Gson().fromJson(eventsJson, eventsType);
+                Type personsType = new TypeToken<ArrayList<Person>>(){}.getType();
+                searchFilteredPersons = new Gson().fromJson(personsJson, personsType);
 
-                    setRecyclerResults();
-                },
-                // Callback to execute if error.
-                (bundle) -> {
-                    Toast.makeText(SearchActivity.this,
-                            R.string.searchError,
-                            Toast.LENGTH_SHORT).show();
-                });
+                setRecyclerResults();
+            },
+            // Callback to execute if error.
+            (bundle) -> {
+                Toast.makeText(SearchActivity.this,
+                        R.string.searchError,
+                        Toast.LENGTH_SHORT).show();
+            });
 
         // Setup and execute evaluate search task.
         EvaluateSearchTask searchTask = new EvaluateSearchTask(

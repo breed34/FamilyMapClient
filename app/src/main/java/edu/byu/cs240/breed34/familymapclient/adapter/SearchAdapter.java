@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import edu.byu.cs240.breed34.familymapclient.R;
-import edu.byu.cs240.breed34.familymapclient.activities.SearchActivity;
 import models.Event;
 import models.Person;
 
@@ -41,6 +40,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
      */
     @Override
     public int getItemViewType(int position) {
+        // Calculate item type.
         return position < persons.size() ? PERSON_ITEM_VIEW_TYPE :
                 EVENT_ITEM_VIEW_TYPE;
     }
@@ -84,6 +84,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder> {
      */
     @Override
     public int getItemCount() {
+        // Calculate item count.
         return persons.size() + events.size();
     }
 }

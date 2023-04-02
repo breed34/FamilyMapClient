@@ -25,9 +25,7 @@ import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.RegisterTask;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.SignInTask;
 import edu.byu.cs240.breed34.familymapclient.listeners.LoginListener;
-import requests.EventsRequest;
 import requests.LoginRequest;
-import requests.PersonsRequest;
 import requests.RegisterRequest;
 
 /**
@@ -95,11 +93,9 @@ public class LoginFragment extends Fragment {
      * to validate the current form.
      */
     private final TextWatcher textWatcher = new TextWatcher() {
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            // Not used.
         }
 
         /**
@@ -110,11 +106,9 @@ public class LoginFragment extends Fragment {
             validateForm();
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void afterTextChanged(Editable editable) {
+            // Not used.
         }
     };
 
@@ -129,36 +123,46 @@ public class LoginFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
+        // Setup server host input.
         serverHostField = view.findViewById(R.id.serverHostField);
         serverHostField.addTextChangedListener(textWatcher);
 
+        // Setup server port input.
         serverPortField = view.findViewById(R.id.serverPortField);
         serverPortField.addTextChangedListener(textWatcher);
 
+        // Setup username input.
         usernameField = view.findViewById(R.id.usernameField);
         usernameField.addTextChangedListener(textWatcher);
 
+        // Setup password input.
         passwordField = view.findViewById(R.id.passwordField);
         passwordField.addTextChangedListener(textWatcher);
 
+        // Setup first name input.
         firstNameField = view.findViewById(R.id.firstNameField);
         firstNameField.addTextChangedListener(textWatcher);
 
+        // Setup last name input.
         lastNameField = view.findViewById(R.id.lastNameField);
         lastNameField.addTextChangedListener(textWatcher);
 
+        // Setup email input.
         emailField = view.findViewById(R.id.emailField);
         emailField.addTextChangedListener(textWatcher);
 
+        // Setup gender radio group.
         genderRadioGroup = view.findViewById(R.id.genderRadioGroup);
         genderRadioGroup.setOnCheckedChangeListener((radioGroup, i) -> validateForm());
 
+        // Setup sign in button.
         signInButton = view.findViewById(R.id.signInButton);
         signInButton.setOnClickListener((v) -> {
             setServerHostAndPort();
             signIn();
         });
 
+        // Setup register button.
         registerButton = view.findViewById(R.id.registerButton);
         registerButton.setOnClickListener((v) -> {
             setServerHostAndPort();
@@ -214,6 +218,7 @@ public class LoginFragment extends Fragment {
      * Starts a task for signing a user in.
      */
     private void signIn() {
+        // Setup sign in task handler.
         Handler signInHandler = new HandlerBase(
             // Callback to execute if success.
             (bundle) -> {
@@ -241,6 +246,7 @@ public class LoginFragment extends Fragment {
      * Starts a task for registering a user.
      */
     private void register() {
+        // Setup register task handler.
         Handler registerHandler = new HandlerBase(
             // Callback to execute if success.
             (bundle) -> {
@@ -275,6 +281,7 @@ public class LoginFragment extends Fragment {
      * @param isRegister whether the user is being registered.
      */
     private void getData(boolean isRegister) {
+        // Setup get data task handler.
         Handler getDataHandler = new HandlerBase(
             // Callback to execute if success.
             (bundle) -> {
@@ -308,6 +315,7 @@ public class LoginFragment extends Fragment {
      */
     private String getFieldValueById(int id) {
         if (id == R.id.genderRadioGroup) {
+            // Return "m" or "f" based on given radio group selection.
             switch (((RadioGroup)getView().findViewById(id)).getCheckedRadioButtonId()) {
                 case R.id.maleRadioButton:
                     return "m";
@@ -318,6 +326,7 @@ public class LoginFragment extends Fragment {
             }
         }
 
+        // Return string value of given text input.
         return ((EditText)getView().findViewById(id)).getText().toString();
     }
 }

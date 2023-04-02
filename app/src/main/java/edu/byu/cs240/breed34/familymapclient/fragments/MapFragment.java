@@ -164,6 +164,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
 
+        // Re-get google map.
         SupportMapFragment mapFragment =
                 (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -201,6 +202,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void selectEvent(GoogleMap googleMap, String eventID, boolean centerEvent) {
+        // Update details information and add lines.
         updateDetails(eventID);
         addLines(googleMap, eventID);
 
@@ -287,12 +289,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void addLines(GoogleMap googleMap, String eventID) {
+        // Setup get connections task handler.
         Handler connectionsHandler = new HandlerBase(
                 // Callback to execute if success.
                 (bundle) -> {
                     // Get connections from bundle.
                     String connectionJson = bundle.getString(
                             GetEventConnectionsTask.CONNECTIONS_KEY);
+
+                    // Deserialize connections.
                     Type connectionsType = new TypeToken<ArrayList<EventConnection>>(){}.getType();
                     List<EventConnection> connections = new Gson().fromJson(connectionJson,
                             connectionsType);

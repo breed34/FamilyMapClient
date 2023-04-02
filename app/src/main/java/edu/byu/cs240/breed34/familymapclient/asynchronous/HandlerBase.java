@@ -33,9 +33,11 @@ public class HandlerBase extends Handler {
      */
     @Override
     public void handleMessage(Message message) {
+        // Check success.
         Bundle bundle = message.getData();
         boolean isSuccess = bundle.getBoolean(TaskBase.IS_SUCCESS_KEY, false);
 
+        // Call appropriate callback.
         if (isSuccess) {
             callback.run(bundle);
         }

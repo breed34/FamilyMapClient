@@ -6,10 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
-import edu.byu.cs240.breed34.familymapclient.client.ServerProxy;
-import models.Authtoken;
-import requests.LoginRequest;
-import results.LoginResult;
 
 /**
  * The asynchronous task for recalculating filtered events.

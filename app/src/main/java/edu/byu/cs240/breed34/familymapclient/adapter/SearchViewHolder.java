@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import edu.byu.cs240.breed34.familymapclient.R;
 import edu.byu.cs240.breed34.familymapclient.activities.EventActivity;
 import edu.byu.cs240.breed34.familymapclient.activities.PersonActivity;
-import edu.byu.cs240.breed34.familymapclient.activities.SearchActivity;
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
 import models.Event;
 import models.Person;
@@ -44,18 +43,6 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
      */
     private int viewType;
 
-    /**
-     * The person associated with the item.
-     */
-    private Person person;
-
-    /**
-     * The event associated with the item.
-     *
-     * NOTE: This should only be used for event items.
-     */
-    private Event event;
-
     public SearchViewHolder(View view, int viewType) {
         super(view);
         this.viewType = viewType;
@@ -79,10 +66,9 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
      * @param person the person associated with the view.
      */
     public void bind(Person person) {
-        this.person = person;
         itemView.setTag(person.getPersonID());
 
-        // Set icon and name.
+        // Set icon and name based on given person.
         String gender = person.getGender();
         int drawableId = gender.equals("m") ? R.drawable.icon_man : R.drawable.icon_woman;
         icon.setImageDrawable(getDrawable(itemView.getResources(),
@@ -99,11 +85,10 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
      */
     @SuppressLint("DefaultLocale")
     public void bind(Event event) {
-        this.event = event;
-        this.person = DataCache.getInstance().getPersons().get(event.getPersonID());
+        Person person = DataCache.getInstance().getPersons().get(event.getPersonID());
         itemView.setTag(event.getEventID());
 
-        // Set name and event details.
+        // Set name and event details based on given event.
         name.setText(String.format("%s %s", person.getFirstName(), person.getLastName()));
         eventDetails.setText(String.format("%S: %s, %s (%d)",
                 event.getEventType(),
@@ -117,17 +102,18 @@ public class SearchViewHolder extends RecyclerView.ViewHolder implements View.On
      */
     @Override
     public void onClick(View view) {
+        Intent intent;
         if (viewType == SearchAdapter.PERSON_ITEM_VIEW_TYPE) {
             // Start person activity.
-            Intent intent = new Intent(view.getContext(), PersonActivity.class);
+            intent = new Intent(view.getContext(), PersonActivity.class);
             intent.putExtra(PersonActivity.PERSON_ID_KEY, view.getTag().toString());
-            view.getContext().startActivity(intent);
         }
         else {
             // Start event activity.
-            Intent intent = new Intent(view.getContext(), EventActivity.class);
+            intent = new Intent(view.getContext(), EventActivity.class);
             intent.putExtra(EventActivity.EVENT_ID_KEY, view.getTag().toString());
-            view.getContext().startActivity(intent);
         }
+
+        view.getContext().startActivity(intent);
     }
 }

@@ -4,8 +4,6 @@ import android.os.Handler;
 
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,10 +36,11 @@ public class EvaluateSearchTask extends TaskBase {
         List<Person> searchFilteredPersons = DataCache.getInstance().searchPersons(searchString);
         List<Event> searchFilteredEvents = DataCache.getInstance().searchEvents(searchString);
 
-        // Convert to JSON and add to bundle.
+        // Convert to JSON.
         String eventResultsJson = new Gson().toJson(searchFilteredEvents);
         String personResultsJson = new Gson().toJson(searchFilteredPersons);
 
+        // Put data in bundle and send message.
         Map<String, Object> results = new HashMap<>();
         results.put(IS_SUCCESS_KEY, true);
         results.put(EVENTS_RESULTS_KEY, eventResultsJson);

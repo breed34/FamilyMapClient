@@ -3,6 +3,7 @@ package edu.byu.cs240.breed34.familymapclient.activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,6 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
      * {@inheritDoc}
      */
     @Override
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);

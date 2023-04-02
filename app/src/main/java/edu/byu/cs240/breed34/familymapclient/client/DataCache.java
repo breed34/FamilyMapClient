@@ -201,7 +201,7 @@ public class DataCache {
     }
 
     private void calculateGenderPersonIDs(String gender, Set<String> genderPersonIDs) {
-        // Find all person ideas for a given gender.
+        // Find all personIDs for a given gender.
         for (Person person : persons.values()) {
             if (person.getGender().equals(gender)) {
                 genderPersonIDs.add(person.getPersonID());
@@ -280,6 +280,7 @@ public class DataCache {
                 }
 
                 if (it.hasNext()) {
+                    // Add connection to list.
                     Event secondEvent = it.next();
                     connections.add(new EventConnection(firstEvent,
                             secondEvent,
@@ -366,12 +367,13 @@ public class DataCache {
     }
 
     /**
-     * Searches persons based on a search.
+     * Searches persons based on a search string.
      *
-     * @param search the search.
+     * @param search the search string.
      * @return the persons matching the search.
      */
     public List<Person> searchPersons(String search) {
+        // Get list of all persons.
         List<Person> searchFilteredPersons = new ArrayList<>(persons.values());
 
         // Remove persons who do not match search.
@@ -394,12 +396,13 @@ public class DataCache {
     }
 
     /**
-     * Searches filtered events based on a search.
+     * Searches filtered events based on a search string.
      *
-     * @param search the search.
+     * @param search the search string.
      * @return the filtered events matching the search.
      */
     public List<Event> searchEvents(String search) {
+        // Get list of all filtered events.
         List<Event> searchFilteredEvents = new ArrayList<>(filteredEvents.values());
 
         // Remove events that do not match search.
@@ -435,6 +438,7 @@ public class DataCache {
     public List<Event> getPersonLifeEvents(Person selectedPerson) {
         // Setup sorted life events set.
         SortedSet<Event> sortedLifeEvents = new TreeSet<>((event1, event2) -> {
+            // Sort events chronologically.
             return event1.getYear() - event2.getYear();
         });
 
@@ -458,6 +462,7 @@ public class DataCache {
     public List<FamilyMember> getPersonFamilyMembers(Person selectedPerson) {
         // Setup sorted family member set.
         SortedSet<FamilyMember> sortedFamilyMembers = new TreeSet<>((member1, member2) -> {
+            // Sort persons in the order of father, mother, spouse, child.
             return member1.getRelationship().ordinal() - member2.getRelationship().ordinal();
         });
 
@@ -491,13 +496,13 @@ public class DataCache {
 
             familyMembers.add(new FamilyMember(person, Relationship.SPOUSE));
         }
-        // Try add as child.
+        // Try add as child if selected person is the father.
         else if (person.getFatherID() != null &&
                 person.getFatherID().equals(selectedPerson.getPersonID())) {
 
             familyMembers.add(new FamilyMember(person, Relationship.CHILD));
         }
-        // Try add as child.
+        // Try add as child if selected person is the mother.
         else if (person.getMotherID() != null &&
                 person.getMotherID().equals(selectedPerson.getPersonID())) {
 

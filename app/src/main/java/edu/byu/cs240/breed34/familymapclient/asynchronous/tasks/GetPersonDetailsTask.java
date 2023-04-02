@@ -7,12 +7,9 @@ import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
 import edu.byu.cs240.breed34.familymapclient.client.models.FamilyMember;
-import edu.byu.cs240.breed34.familymapclient.client.models.Relationship;
 import models.Event;
 import models.Person;
 
@@ -41,10 +38,11 @@ public class GetPersonDetailsTask extends TaskBase {
         List<FamilyMember> sortedFamilyMembers = DataCache.getInstance()
                 .getPersonFamilyMembers(selectedPerson);
 
-        // Convert to JSON and add to bundle.
+        // Convert to JSON.
         String lifeEventsJson = new Gson().toJson(sortedLifeEvents);
         String familyMembersJson = new Gson().toJson(sortedFamilyMembers);
 
+        // Put data in bundle and send message.
         Map<String, Object> results = new HashMap<>();
         results.put(IS_SUCCESS_KEY, true);
         results.put(LIFE_EVENTS_KEY, lifeEventsJson);

@@ -64,6 +64,7 @@ public class PersonAdapter extends BaseExpandableListAdapter {
      */
     @Override
     public int getChildrenCount(int groupPosition) {
+        // Calculate children count.
         switch (groupPosition) {
             case LIFE_EVENTS_GROUP_POSITION:
                 return lifeEvents.size();
@@ -77,28 +78,14 @@ public class PersonAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getGroup(int groupPosition) {
-        switch (groupPosition) {
-            case LIFE_EVENTS_GROUP_POSITION:
-                return "LIFE EVENTS";
-            case FAMILY_MEMBERS_GROUP_POSITION:
-                return "FAMILY";
-            default:
-                throw new IllegalArgumentException("Unrecognized group position: " +
-                        groupPosition);
-        }
+        // Not used.
+        return null;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        switch (groupPosition) {
-            case LIFE_EVENTS_GROUP_POSITION:
-                return lifeEvents.get(childPosition);
-            case FAMILY_MEMBERS_GROUP_POSITION:
-                return familyMembers.get(childPosition);
-            default:
-                throw new IllegalArgumentException("Unrecognized group position: " +
-                        groupPosition);
-        }
+        // Not used.
+        return null;
     }
 
     /**
@@ -197,7 +184,7 @@ public class PersonAdapter extends BaseExpandableListAdapter {
 
     @SuppressLint("DefaultLocale")
     private void initializeLifeEventView(View lifeEventView, int childPosition) {
-        // Set text for event details and person name.
+        // Set text for event details.
         Event event = lifeEvents.get(childPosition);
         TextView eventDetails = lifeEventView.findViewById(R.id.eventItemDetails);
         eventDetails.setText(String.format("%S: %s, %s (%d)",
@@ -206,6 +193,7 @@ public class PersonAdapter extends BaseExpandableListAdapter {
                 event.getCountry(),
                 event.getYear()));
 
+        // Set text for person name.
         TextView eventPersonName = lifeEventView.findViewById(R.id.eventItemName);
         eventPersonName.setText(String.format("%s %s",
                 person.getFirstName(),
@@ -241,7 +229,7 @@ public class PersonAdapter extends BaseExpandableListAdapter {
                 drawableId,
                 null));
 
-
+        // Setup on click listener.
         familyMemberView.setTag(familyMember.getPersonID());
         familyMemberView.setOnClickListener(view -> {
             // Start person activity.

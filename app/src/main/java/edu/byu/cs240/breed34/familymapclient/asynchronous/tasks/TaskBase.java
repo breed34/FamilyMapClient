@@ -39,9 +39,11 @@ public abstract class TaskBase implements Runnable {
     protected void sendMessage(Map<String, Object> results) {
         Message message = Message.obtain();
 
+        // Setup bundle.
         Bundle messageBundle = new Bundle();
         addToBundle(messageBundle, results);
 
+        // Add bundle to message and send message.
         message.setData(messageBundle);
         messageHandler.sendMessage(message);
     }
@@ -54,9 +56,11 @@ public abstract class TaskBase implements Runnable {
      */
     private void addToBundle(Bundle messageBundle, Map<String, Object> results) {
         for (Map.Entry<String, Object> keyPair : results.entrySet()) {
+            // Add boolean to bundle.
             if (keyPair.getValue() instanceof Boolean) {
                 messageBundle.putBoolean(keyPair.getKey(), (Boolean)keyPair.getValue());
             }
+            // Add string to bundle.
             else if (keyPair.getValue() instanceof String) {
                 messageBundle.putString(keyPair.getKey(), (String)keyPair.getValue());
             }

@@ -12,9 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import models.Authtoken;
-import requests.EventsRequest;
 import requests.LoginRequest;
-import requests.PersonsRequest;
 import requests.RegisterRequest;
 import results.EventsResult;
 import results.LoginResult;

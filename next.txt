@@ -1,6 +1,4 @@
 - Add unit tests.
-- Go through files and cleanup.
-- Reuse repeated code.
 - Reread design and rubric.
 - End to end test.
 
