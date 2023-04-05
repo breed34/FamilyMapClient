@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
+import edu.byu.cs240.breed34.familymapclient.testhelpers.ClearProxy;
 import results.ClearResult;
 
 public class ClearProxyTest {

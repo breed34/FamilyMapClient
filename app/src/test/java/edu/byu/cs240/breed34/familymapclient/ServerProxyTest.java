@@ -9,10 +9,10 @@ import org.junit.Test;
 
 import edu.byu.cs240.breed34.familymapclient.client.DataCache;
 import edu.byu.cs240.breed34.familymapclient.client.ServerProxy;
+import edu.byu.cs240.breed34.familymapclient.testhelpers.ClearProxy;
 import models.Authtoken;
 import requests.LoginRequest;
 import requests.RegisterRequest;
-import results.ClearResult;
 import results.EventsResult;
 import results.LoginResult;
 import results.PersonsResult;

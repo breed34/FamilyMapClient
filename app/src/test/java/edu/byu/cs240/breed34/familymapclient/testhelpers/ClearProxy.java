@@ -1,4 +1,4 @@
-package edu.byu.cs240.breed34.familymapclient;
+package edu.byu.cs240.breed34.familymapclient.testhelpers;
 
 import java.io.IOException;
 import java.net.URL;

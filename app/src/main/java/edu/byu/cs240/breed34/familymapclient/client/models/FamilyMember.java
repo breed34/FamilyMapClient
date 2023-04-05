@@ -21,6 +21,21 @@ public class FamilyMember extends Person {
         this.relationship = relationship;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !obj.getClass().equals(this.getClass())) {
+            return false;
+        }
+
+        if (this == obj) {
+            return true;
+        }
+
+        FamilyMember member = (FamilyMember)obj;
+        return  super.equals(obj) &&
+                this.relationship.equals(member.relationship);
+    }
+
     public Relationship getRelationship() {
         return relationship;
     }

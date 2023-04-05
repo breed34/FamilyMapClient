@@ -2,6 +2,7 @@ package edu.byu.cs240.breed34.familymapclient.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,6 +30,25 @@ public class DataCache {
      * The shared instance of the data cache.
      */
     private static final DataCache instance = new DataCache();
+
+    /**
+     * The comparator for comparing event objects.
+     */
+    private static final Comparator<Event> EVENT_COMPARATOR = (event1, event2) -> {
+        // Check for birth or death event types.
+        if (event1.getEventType().equals("Birth") ||
+            event2.getEventType().equals("Death")) {
+
+            return -1;
+        } else if (event1.getEventType().equals("Death") ||
+                   event2.getEventType().equals("Birth")) {
+
+            return 1;
+        }
+
+        // If no birth or death event type, sort chronologically.
+        return event1.getYear() - event2.getYear();
+    };
 
     public static DataCache getInstance() {
         return instance;
@@ -118,6 +138,10 @@ public class DataCache {
 
     public Settings getSettings() {
         return settings;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 
     public Map<String, Person> getPersons() {
@@ -226,8 +250,10 @@ public class DataCache {
      * @return the list of connections.
      */
     public List<EventConnection> getConnections(String eventID) {
-        // Get event and person, and set up connections list.
+        // Get event.
         Event filteredEvent = filteredEvents.get(eventID);
+
+        // Get person, and set up connections list.
         Person eventPerson = persons.get(filteredEvent.getPersonID());
         List<EventConnection> connections = new ArrayList<>();
 
@@ -235,9 +261,7 @@ public class DataCache {
         Map<String, SortedSet<Event>> sortedPersonEvents = new HashMap<>();
         for (Event event : filteredEvents.values()) {
             if (!sortedPersonEvents.containsKey(event.getPersonID())) {
-                sortedPersonEvents.put(event.getPersonID(), new TreeSet<>((event1, event2) -> {
-                    return event1.getYear() - event2.getYear();
-                }));
+                sortedPersonEvents.put(event.getPersonID(), new TreeSet<>(EVENT_COMPARATOR));
             }
 
             sortedPersonEvents.get(event.getPersonID()).add(event);
@@ -373,12 +397,17 @@ public class DataCache {
      * @return the persons matching the search.
      */
     public List<Person> searchPersons(String search) {
+        // Handle if search is null or empty string.
+        if (search == null || search.length() < 1) {
+            return new ArrayList<>();
+        }
+
         // Get list of all persons.
         List<Person> searchFilteredPersons = new ArrayList<>(persons.values());
 
         // Remove persons who do not match search.
         for (Person person : persons.values()) {
-            if (doesNotContainSearch(person, search)) {
+            if (doesNotContainSearch(person, search.toLowerCase())) {
                 searchFilteredPersons.remove(person);
             }
         }
@@ -402,12 +431,17 @@ public class DataCache {
      * @return the filtered events matching the search.
      */
     public List<Event> searchEvents(String search) {
+        // Handle if search is null or empty string.
+        if (search == null || search.length() < 1) {
+            return new ArrayList<>();
+        }
+
         // Get list of all filtered events.
         List<Event> searchFilteredEvents = new ArrayList<>(filteredEvents.values());
 
         // Remove events that do not match search.
         for (Event event : filteredEvents.values()) {
-            if (doesNotContainSearch(event, search)) {
+            if (doesNotContainSearch(event, search.toLowerCase())) {
                 searchFilteredEvents.remove(event);
             }
         }
@@ -437,10 +471,7 @@ public class DataCache {
      */
     public List<Event> getPersonLifeEvents(Person selectedPerson) {
         // Setup sorted life events set.
-        SortedSet<Event> sortedLifeEvents = new TreeSet<>((event1, event2) -> {
-            // Sort events chronologically.
-            return event1.getYear() - event2.getYear();
-        });
+        SortedSet<Event> sortedLifeEvents = new TreeSet<>(EVENT_COMPARATOR);
 
         // Add applicable events to set.
         for (Event event : DataCache.getInstance().getFilteredEvents().values()) {

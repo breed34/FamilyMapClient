@@ -1,5 +1,7 @@
 package edu.byu.cs240.breed34.familymapclient.client.models;
 
+import androidx.annotation.Nullable;
+
 import models.Event;
 
 /**
@@ -49,6 +51,26 @@ public class EventConnection {
         this.secondEvent = secondEvent;
         this.connectionType = connectionType;
         this.generation = generation;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null || !obj.getClass().equals(this.getClass())) {
+            return false;
+        }
+
+        if (this == obj) {
+            return true;
+        }
+
+        EventConnection conn = (EventConnection) obj;
+        return  firstEvent.equals(conn.firstEvent) &&
+                secondEvent.equals(conn.secondEvent) &&
+                connectionType.equals(conn.connectionType) &&
+                generation == conn.generation;
     }
 
     public Event getFirstEvent() {
