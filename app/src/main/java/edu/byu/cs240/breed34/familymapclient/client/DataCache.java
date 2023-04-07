@@ -35,15 +35,26 @@ public class DataCache {
      * The comparator for comparing event objects.
      */
     private static final Comparator<Event> EVENT_COMPARATOR = (event1, event2) -> {
+        // Normalize event types.
+        String event1Type = event1.getEventType().toLowerCase();
+        String event2Type = event2.getEventType().toLowerCase();
+
         // Check for birth or death event types.
-        if (event1.getEventType().equals("Birth") ||
-            event2.getEventType().equals("Death")) {
-
+        if (event1Type.equals("birth") || event2Type.equals("death")) {
             return -1;
-        } else if (event1.getEventType().equals("Death") ||
-                   event2.getEventType().equals("Birth")) {
-
+        } else if (event1Type.equals("death") || event2Type.equals("birth")) {
             return 1;
+        }
+
+        // If event years are the same sort by event type.
+        if (event1.getYear() == event2.getYear()) {
+            // If year and event type are the same just put event1 first.
+            if (event1Type.equals(event2Type)) {
+                return -1;
+            }
+
+            return  event1.getEventType().toLowerCase().compareTo(
+                    event2.getEventType().toLowerCase());
         }
 
         // If no birth or death event type, sort chronologically.
@@ -282,9 +293,12 @@ public class DataCache {
 
         // Add spouse event connection if settings indicate to do so.
         if (settings.showSpouseLines() && eventPerson.getSpouseID() != null) {
-            connections.add(new EventConnection(event,
-                    sortedPersonEvents.get(eventPerson.getSpouseID()).first(),
-                    ConnectionType.SPOUSE));
+            SortedSet<Event> spouseEvents = sortedPersonEvents.get(eventPerson.getSpouseID());
+            if (spouseEvents != null) {
+                connections.add(new EventConnection(event,
+                        spouseEvents.first(),
+                        ConnectionType.SPOUSE));
+            }
         }
     }
 

@@ -2,6 +2,8 @@ package edu.byu.cs240.breed34.familymapclient.fragments;
 
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
+import static java.lang.Math.abs;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -36,7 +38,9 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -68,10 +72,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             BitmapDescriptorFactory.HUE_RED,
             BitmapDescriptorFactory.HUE_ORANGE,
             BitmapDescriptorFactory.HUE_GREEN,
-            BitmapDescriptorFactory.HUE_MAGENTA,
-            BitmapDescriptorFactory.HUE_CYAN,
-            BitmapDescriptorFactory.HUE_BLUE,
             BitmapDescriptorFactory.HUE_AZURE,
+            BitmapDescriptorFactory.HUE_CYAN,
+            BitmapDescriptorFactory.HUE_MAGENTA,
+            BitmapDescriptorFactory.HUE_BLUE,
     };
 
     /**
@@ -98,6 +102,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      * The eventID of the currently selected event.
      */
     private String selectedEventID;
+
+    /**
+     * A map of event type to color used to keep track of
+     * the colors that have been used for event markers.
+     */
+    private Map<String, Float> usedColors;
+
+    /**
+     * The index of the next color to use.
+     */
+    private int currentColorIndex;
 
     /**
      * {@inheritDoc}
@@ -242,14 +257,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void addEventMarkers(GoogleMap googleMap) {
         for (Event event : DataCache.getInstance().getFilteredEvents().values()) {
-            // Get color by event type hash code.
-            float hue = COLORS[event.getEventType().hashCode() % COLORS.length];
+            // Create marker for event.
+            float hue = getEventColor(event.getEventType().toLowerCase());
             Marker marker = googleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(event.getLatitude(), event.getLongitude()))
                     .icon(BitmapDescriptorFactory.defaultMarker(hue)));
 
             marker.setTag(event.getEventID());
         }
+    }
+
+    private float getEventColor(String eventType) {
+        // Initialize colors if necessary.
+        if (usedColors == null) {
+            usedColors = new HashMap<>();
+            usedColors.put("birth", BitmapDescriptorFactory.HUE_CYAN);
+            usedColors.put("marriage", BitmapDescriptorFactory.HUE_MAGENTA);
+            usedColors.put("death", BitmapDescriptorFactory.HUE_BLUE);
+            currentColorIndex = 0;
+        }
+
+        // Add new color if event type has not been used previously.
+        if (!usedColors.containsKey(eventType.toLowerCase())) {
+            usedColors.put(eventType.toLowerCase(), COLORS[currentColorIndex]);
+            currentColorIndex++;
+        }
+
+        // Return color based on event type.
+        return usedColors.get(eventType.toLowerCase());
     }
 
     private void updateDetails(String eventID) {

@@ -26,7 +26,6 @@ import edu.byu.cs240.breed34.familymapclient.R;
 import edu.byu.cs240.breed34.familymapclient.adapter.SearchAdapter;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.HandlerBase;
 import edu.byu.cs240.breed34.familymapclient.asynchronous.tasks.EvaluateSearchTask;
-import edu.byu.cs240.breed34.familymapclient.client.DataCache;
 import models.Event;
 import models.Person;
 
@@ -105,11 +104,8 @@ public class SearchActivity extends AppCompatActivity {
 
     private void setDefaultSearchResults() {
         // Set search filtered persons and events to default values.
-        Collection<Person> personsCollection = DataCache.getInstance().getPersons().values();
-        Collection<Event> eventsCollection = DataCache.getInstance().getFilteredEvents().values();
-
-        searchFilteredPersons = new ArrayList<>(personsCollection);
-        searchFilteredEvents = new ArrayList<>(eventsCollection);
+        searchFilteredPersons = new ArrayList<>();
+        searchFilteredEvents = new ArrayList<>();
     }
 
     private void search(String searchString) {
