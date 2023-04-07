@@ -105,6 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
             DataCache.getInstance().setCurrentUserPersonID(null);
 
             Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         });
     }
