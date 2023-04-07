@@ -2,8 +2,6 @@ package edu.byu.cs240.breed34.familymapclient.fragments;
 
 import static androidx.core.content.res.ResourcesCompat.getDrawable;
 
-import static java.lang.Math.abs;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
