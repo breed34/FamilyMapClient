@@ -1,3 +1,0 @@
-- Clean up DataCacheTest.java.
-- End to end test.
-    = Make sure that event marker colors are not being repeatedly used in hashing.
